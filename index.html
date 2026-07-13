@@ -26,6 +26,9 @@
   .tabc{display:none; padding:0 16px;}
   .tabc.on{display:block;}
   .pthumb{width:34px; height:34px; border-radius:8px; object-fit:cover; margin-left:auto;}
+  .tthumb{width:64px; height:80px; object-fit:cover; border-radius:8px; flex:none;}
+  .chip{padding:8px 12px; border-radius:20px; font-size:13px;}
+  .entry.editing{outline:1px solid var(--acc); border-radius:8px;}
   .card{background:var(--card); border:1px solid var(--line); border-radius:14px;
     padding:14px; margin-bottom:12px;}
   .card h2{margin:0 0 10px; font-size:12px; letter-spacing:2px; color:var(--dim);
@@ -76,6 +79,10 @@
   .exTarget{font-size:12px; color:var(--dim);}
   .exLast{font-size:12px; color:var(--blue); margin-top:2px;}
   .exRow input{margin-top:6px; padding:9px;}
+  .setRow{display:grid; grid-template-columns:26px 1fr 16px 1fr; gap:6px; align-items:center;}
+  .setRow input{margin-top:6px; padding:9px; text-align:center;}
+  .setRow .hint{margin-top:6px; text-align:center;}
+  .addSet{margin-top:8px; padding:7px 12px; font-size:13px;}
   /* grid */
   #grid{display:grid; grid-template-columns:repeat(10,1fr); gap:5px;}
   .cell{aspect-ratio:1; border-radius:6px; background:var(--card2);
@@ -129,14 +136,18 @@
     <div class="macro" id="mcFat"><div class="val" id="fatVal">0</div><div class="tgt">/ 95g fat cap</div></div>
   </div>
   <div class="card">
-    <h2>Log Food</h2>
+    <h2>Saved Meals — tap to log, hold to delete</h2>
+    <div id="mealChips" class="rowBtns"></div>
+  </div>
+  <div class="card">
+    <h2 id="logHead">Log Food</h2>
     <div class="foodRow" style="grid-template-columns:1fr 62px 62px 62px">
       <input id="fName" placeholder="Food">
       <input id="fCal" type="number" inputmode="numeric" placeholder="cal">
       <input id="fPro" type="number" inputmode="numeric" placeholder="pro">
       <input id="fFat" type="number" inputmode="numeric" placeholder="fat">
     </div>
-    <button class="pri" style="width:100%" onclick="addFood()">Add</button>
+    <button class="pri" style="width:100%" id="addBtn" onclick="addFood()">Add</button>
     <div class="rowBtns" style="margin-top:8px">
       <button style="flex:1" onclick="snapMeal()">📷 Snap meal → auto macros</button>
       <button onclick="setKey()">🔑</button>
@@ -166,6 +177,19 @@
     <h2>Challenge Map</h2>
     <div id="grid"></div>
     <p class="statline" style="margin:10px 0 0"><span>Attempt <b id="attemptN"></b></span><span id="doneCount"></span></p>
+  </div>
+  <div class="card">
+    <h2>Body — Weekly Check-in (Sundays)</h2>
+    <div class="foodRow" style="grid-template-columns:1fr 74px">
+      <input id="bwW" type="number" step="0.1" inputmode="decimal" placeholder="weight lb">
+      <button class="pri" onclick="logBody()">Log</button>
+    </div>
+    <div id="bodyChart"></div>
+  </div>
+  <div class="card">
+    <h2>Photo Timeline</h2>
+    <div id="photoStrip" style="display:flex; gap:6px; overflow-x:auto"></div>
+    <button style="width:100%; margin-top:8px" onclick="comparePhotos()">Day 1 vs Latest</button>
   </div>
   <div class="card">
     <h2>Backup</h2>
@@ -201,7 +225,7 @@ const RULES=[
   {id:'sleep',  lbl:'8 hours of sleep', sub:'last night counts for today'},
   {id:'journal',lbl:'Journal entry', sub:'wins, struggles, tomorrow’s plan'},
   {id:'nutrition',lbl:'Nutrition on target', sub:'~3,200 cal · 220g protein · no fried · no sugar'},
-  {id:'read',   lbl:'Read 10 pages', sub:'nonfiction, no audiobooks'},
+  {id:'focus',  lbl:'45 min focused work', sub:'tap to start the timer — one distraction-free block'},
   {id:'photo',  lbl:'Progress photo', sub:'same spot, same pose'}
 ];
 const WORKOUTS={
@@ -217,9 +241,25 @@ const WORKOUTS={
 
 let S=load();
 function load(){
-  try{const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.start) return s;}catch(e){}
-  return {start:'2026-07-06', attempt:1, days:{}, ex:{}};
+  let s=null;
+  try{s=JSON.parse(localStorage.getItem(KEY));}catch(e){}
+  if(!s||!s.start) s={start:'2026-07-06', attempt:1, days:{}, ex:{}};
+  s.meals=s.meals||[]; s.drafts=s.drafts||{}; s.body=s.body||[];
+  // migrate: 'read 10 pages' rule renamed to 'focus' — keep old checkmarks valid
+  Object.values(s.days).forEach(d=>{
+    if(d.checks&&d.checks.read!==undefined&&d.checks.focus===undefined) d.checks.focus=d.checks.read;
+  });
+  return s;
 }
+// ----- focus timer (45:00) -----
+const FOCUS_SEC=45*60;
+function checkFocusTimer(d){
+  if(d.checks.focus||!d.focusStart) return null;
+  const rem=FOCUS_SEC-(Date.now()-d.focusStart)/1000;
+  if(rem<=0){ d.checks.focus=true; delete d.focusStart; save(); return 0; }
+  return rem;
+}
+function fmtT(s){s=Math.ceil(s); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function save(){localStorage.setItem(KEY,JSON.stringify(S));}
 function d2s(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function s2d(s){const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
@@ -268,7 +308,7 @@ function header(){
     sub.textContent='75 completed. Phase 2?';
   }else{
     big.innerHTML='DAY <span>'+n+'</span> / '+TOTAL;
-    sub.textContent=new Date().toDateString()+(isSun(t)?' · REST DAY (workouts exempt)':'');
+    sub.textContent=new Date().toDateString()+(isSun(t)?' · REST DAY — weigh-in & weekly video day 🎥':'');
   }
 }
 
@@ -281,6 +321,11 @@ function renderRules(){
     row.className='rule'+(d.checks[r.id]?' done':'')+(ex?' exempt':'');
     let sub=r.sub;
     if(r.id==='nutrition'){const f=totals(d); sub=f.c+' cal · '+f.p+'g pro · '+f.f+'g fat logged so far';}
+    if(r.id==='focus'){
+      const rem=checkFocusTimer(d);
+      if(d.checks.focus) sub='45 minutes — done';
+      else if(rem!==null) sub='⏱ '+fmtT(rem)+' remaining — tap to cancel';
+    }
     row.innerHTML='<div class="box">✓</div><div><div class="lbl">'+r.lbl+(ex?' — exempt':'')+'</div><div class="sub">'+sub+'</div></div>';
     if(r.id==='photo'&&d.photo){
       const im=document.createElement('img'); im.className='pthumb'; im.src=d.photo;
@@ -289,6 +334,10 @@ function renderRules(){
     }
     if(!ex) row.onclick=()=>{
       if(r.id==='photo'&&!d.checks.photo){ document.getElementById('progCam').click(); return; }
+      if(r.id==='focus'&&!d.checks.focus){
+        if(d.focusStart){ if(confirm('Cancel this focus session? The clock starts over.')){delete d.focusStart; save(); renderAll();} return; }
+        d.focusStart=Date.now(); save(); renderAll(); return;
+      }
       d.checks[r.id]=!d.checks[r.id]; save(); renderAll();
     };
     el.appendChild(row);
@@ -332,13 +381,33 @@ function renderFood(){
   const list=document.getElementById('foodList');
   list.innerHTML=d.food.length?'':'<p class="hint">Nothing logged yet.</p>';
   d.food.forEach((e,i)=>{
-    const row=document.createElement('div'); row.className='entry';
-    row.innerHTML='<div>'+e.n+'<div class="m">'+e.c+' cal · '+e.p+'g pro · '+(e.f||0)+'g fat</div></div>';
+    const row=document.createElement('div'); row.className='entry'+(i===editIdx?' editing':'');
+    row.innerHTML='<div>'+e.n+'<div class="m">'+e.c+' cal · '+e.p+'g pro · '+(e.f||0)+'g fat · tap to edit</div></div>';
+    const sv=document.createElement('button'); sv.className='del'; sv.textContent='💾'; sv.title='Save as meal';
+    sv.onclick=ev=>{ev.stopPropagation(); saveAsMeal(e);};
     const del=document.createElement('button'); del.className='del'; del.textContent='✕';
-    del.onclick=()=>{d.food.splice(i,1); save(); renderFood(); renderRules();};
-    row.appendChild(del); list.appendChild(row);
+    del.onclick=ev=>{ev.stopPropagation(); d.food.splice(i,1); if(editIdx===i) cancelEdit(); save(); renderFood(); renderRules();};
+    row.onclick=()=>beginEdit(i);
+    row.appendChild(sv); row.appendChild(del); list.appendChild(row);
   });
   coach();
+}
+let editIdx=null;
+function beginEdit(i){
+  const e=day(todayS()).food[i];
+  document.getElementById('fName').value=e.n;
+  document.getElementById('fCal').value=e.c;
+  document.getElementById('fPro').value=e.p;
+  document.getElementById('fFat').value=e.f||0;
+  editIdx=i;
+  document.getElementById('addBtn').textContent='Update entry';
+  document.getElementById('logHead').textContent='Edit Entry (tap Update to save)';
+  renderFood();
+}
+function cancelEdit(){
+  editIdx=null;
+  document.getElementById('addBtn').textContent='Add';
+  document.getElementById('logHead').textContent='Log Food';
 }
 function addFood(){
   const n=document.getElementById('fName').value.trim();
@@ -346,9 +415,45 @@ function addFood(){
   const p=+document.getElementById('fPro').value||0;
   const fat=+document.getElementById('fFat').value||0;
   if(!n||(!c&&!p)) return;
-  day(todayS()).food.push({n,c,p,f:fat}); save();
+  const d=day(todayS());
+  if(editIdx!==null&&d.food[editIdx]) d.food[editIdx]={n,c,p,f:fat};
+  else d.food.push({n,c,p,f:fat});
+  cancelEdit(); save();
   ['fName','fCal','fPro','fFat'].forEach(i=>document.getElementById(i).value='');
   renderFood(); renderRules();
+}
+// ----- saved meals -----
+function saveAsMeal(e){
+  if(S.meals.some(m=>m.n===e.n)){alert('"'+e.n+'" is already saved.');return;}
+  S.meals.push({n:e.n,c:e.c,p:e.p,f:e.f||0}); save(); renderMeals();
+  alert('Saved "'+e.n+'" — it\'s now a one-tap chip.');
+}
+function newMealFromForm(){
+  const n=document.getElementById('fName').value.trim();
+  const c=+document.getElementById('fCal').value||0;
+  const p=+document.getElementById('fPro').value||0;
+  const fat=+document.getElementById('fFat').value||0;
+  if(!n||(!c&&!p)){alert('Fill the food form first, then tap ＋ to save it as a meal.');return;}
+  saveAsMeal({n,c,p,f:fat});
+}
+let holdT=null;
+function renderMeals(){
+  const box=document.getElementById('mealChips'); box.innerHTML='';
+  S.meals.forEach((m,i)=>{
+    const b=document.createElement('button'); b.className='chip';
+    b.textContent=m.n;
+    const down=()=>{holdT=setTimeout(()=>{holdT='fired';
+      if(confirm('Delete saved meal "'+m.n+'"?')){S.meals.splice(i,1); save(); renderMeals();}},600);};
+    const up=()=>{ if(holdT==='fired'){holdT=null;return;} clearTimeout(holdT); holdT=null;
+      day(todayS()).food.push({...m}); save(); renderFood(); renderRules();
+      b.style.background='var(--accD)'; setTimeout(()=>b.style.background='',400);};
+    b.ontouchstart=down; b.ontouchend=up; b.onmousedown=down; b.onmouseup=up;
+    box.appendChild(b);
+  });
+  const add=document.createElement('button'); add.className='chip'; add.textContent='＋';
+  add.onclick=newMealFromForm; box.appendChild(add);
+  if(!S.meals.length){const h=document.createElement('span'); h.className='hint';
+    h.textContent=' Log a meal below, then tap 💾 on it — or fill the form and tap ＋.'; box.appendChild(h);}
 }
 
 // ----- progression engine -----
@@ -418,24 +523,133 @@ function renderLifts(){
     const hist=(S.ex[name]||[]);
     const last=hist.length?hist[hist.length-1]:null;
     const rec=recommend(name,target);
+    const lastSets=last?parseSets(last.v):[];
+    const drv=S.drafts[wo]&&S.drafts[wo].v[name];
+    let rows=Array.isArray(drv)?drv.map(x=>({w:x.w,r:x.r}))
+      :(typeof drv==='string'&&drv?parseSets(drv).map(s=>({w:''+s.w,r:''+s.r})):[]);
+    const prog=+((target.match(/^(\d+)\s*x/i)||[])[1]||3);
+    while(rows.length<prog) rows.push({w:'',r:''});
     const row=document.createElement('div'); row.className='exRow';
     row.innerHTML='<div class="exName">'+name+'</div><div class="exTarget">'+target+'</div>'+
       (last?'<div class="exLast">Last ('+last.d.slice(5)+'): '+last.v+'</div>':'')+
-      (rec?'<div class="exLast" style="color:var(--acc)">'+rec+'</div>':'')+
-      '<input placeholder="e.g. 205x8, 205x7, 200x8" data-ex="'+name+'">';
+      (rec?'<div class="exLast" style="color:var(--acc)">'+rec+'</div>':'');
+    rows.forEach((s,i)=>{
+      const sr=document.createElement('div'); sr.className='setRow';
+      const phW=rows.slice(0,i).map(x=>x.w).filter(Boolean).pop()
+        ||(lastSets[i]&&''+lastSets[i].w)||(lastSets.length?''+lastSets[lastSets.length-1].w:'lb');
+      const phR=(lastSets[i]&&''+lastSets[i].r)||'reps';
+      sr.innerHTML='<span class="hint">S'+(i+1)+'</span>'+
+        '<input type="number" inputmode="decimal" placeholder="'+phW+'">'+
+        '<span class="hint">×</span>'+
+        '<input type="number" inputmode="numeric" placeholder="'+phR+'">';
+      const ins=sr.querySelectorAll('input');
+      ins[0].value=s.w; ins[1].value=s.r;
+      const upd=()=>{
+        if(!S.drafts[wo]) S.drafts[wo]={d:todayS(), v:{}};
+        rows[i]={w:ins[0].value, r:ins[1].value};
+        S.drafts[wo].v[name]=rows; S.drafts[wo].d=todayS(); save();
+      };
+      ins[0].oninput=upd; ins[1].oninput=upd;
+      ins[0].onchange=()=>renderLifts(); // refresh prefill hints for sets below
+      row.appendChild(sr);
+    });
+    const addSet=document.createElement('button'); addSet.className='addSet'; addSet.textContent='+ set';
+    addSet.onclick=()=>{
+      if(!S.drafts[wo]) S.drafts[wo]={d:todayS(), v:{}};
+      rows.push({w:'',r:''});
+      S.drafts[wo].v[name]=rows; S.drafts[wo].d=todayS(); save(); renderLifts();
+    };
+    row.appendChild(addSet);
     el.appendChild(row);
   });
 }
+function serializeRows(rows){
+  if(!Array.isArray(rows)) return (rows||'').trim();
+  return rows.filter(s=>s.w&&s.r).map(s=>s.w+'x'+s.r).join(', ');
+}
 function saveLifts(){
   const t=todayS(), wo=document.getElementById('woSel').value;
-  let n=0;
-  document.querySelectorAll('#exList input').forEach(inp=>{
-    const v=inp.value.trim(); if(!v) return;
-    const name=inp.dataset.ex;
+  const dr=S.drafts[wo]; let n=0;
+  if(dr) Object.keys(dr.v).forEach(name=>{
+    const str=serializeRows(dr.v[name]); if(!str) return;
     if(!S.ex[name]) S.ex[name]=[];
-    S.ex[name].push({d:t,v}); n++;
+    S.ex[name].push({d:t, v:str}); n++;
   });
-  if(n){ day(t).lifts=wo; save(); renderLifts(); alert(wo+' saved ('+n+' lifts logged).'); }
+  if(n){ delete S.drafts[wo]; day(t).lifts=wo; save(); renderLifts(); renderGoals(); alert(wo+' saved ('+n+' lifts logged).'); }
+  else alert('Nothing to save yet — enter weight and reps for at least one set.');
+}
+// unsaved drafts from previous days auto-commit so nothing is lost
+function commitStaleDrafts(){
+  const t=todayS(); let changed=false;
+  Object.keys(S.drafts).forEach(wo=>{
+    const dr=S.drafts[wo];
+    if(dr.d<t){
+      Object.keys(dr.v).forEach(name=>{
+        const v=serializeRows(dr.v[name]); if(!v) return;
+        if(!S.ex[name]) S.ex[name]=[];
+        S.ex[name].push({d:dr.d, v});
+      });
+      if(Object.keys(dr.v).some(name=>serializeRows(dr.v[name]))) day(dr.d).lifts=wo;
+      delete S.drafts[wo]; changed=true;
+    }
+  });
+  if(changed) save();
+}
+// ----- body check-in -----
+function logBody(){
+  const w=+document.getElementById('bwW').value||0;
+  if(!w) return;
+  const t=todayS();
+  const ex=S.body.find(b=>b.d===t);
+  if(ex) ex.w=w;
+  else S.body.push({d:t, w});
+  save();
+  document.getElementById('bwW').value='';
+  renderBody();
+}
+function sline(pts,color,W,H){
+  const xs=pts.map(p=>p.x), ys=pts.map(p=>p.y);
+  const mn=Math.min(...ys), mx=Math.max(...ys), span=(mx-mn)||1;
+  const px=i=>10+(W-20)*(pts.length===1?0.5:i/(pts.length-1));
+  const py=v=>H-8-(H-16)*((v-mn)/span);
+  return '<polyline fill="none" stroke="'+color+'" stroke-width="2" points="'+
+    pts.map((p,i)=>px(i)+','+py(p.y)).join(' ')+'"/>'+
+    pts.map((p,i)=>'<circle cx="'+px(i)+'" cy="'+py(p.y)+'" r="3" fill="'+color+'"/>').join('');
+}
+function renderBody(){
+  const el=document.getElementById('bodyChart');
+  const ws=S.body.filter(b=>b.w).map(b=>({x:b.d,y:b.w}));
+  if(!ws.length){el.innerHTML='<p class="hint">Log your weight each Sunday. Trend shows here.</p>';return;}
+  el.innerHTML='<div class="hint" style="margin-top:8px">Weight: '+ws[0].y+' → <b style="color:var(--acc)">'+ws[ws.length-1].y+' lb</b></div>'+
+    '<svg width="100%" height="60" viewBox="0 0 300 60" preserveAspectRatio="none">'+sline(ws,'#4ade80',300,60)+'</svg>';
+}
+// ----- photo timeline -----
+function photoDays(){
+  return Object.keys(S.days).filter(ds=>S.days[ds].photo).sort();
+}
+function renderStrip(){
+  const el=document.getElementById('photoStrip');
+  const ds=photoDays();
+  if(!ds.length){el.innerHTML='<span class="hint">Progress photos land here.</span>';return;}
+  el.innerHTML='';
+  ds.forEach(d=>{
+    const wrap=document.createElement('div'); wrap.style.textAlign='center'; wrap.style.flex='none';
+    const im=document.createElement('img'); im.className='tthumb'; im.src=S.days[d].photo;
+    im.onclick=()=>viewPhoto(S.days[d].photo);
+    const cap=document.createElement('div'); cap.className='hint';
+    const n=dayNum(d); cap.textContent=(n>=1&&n<=TOTAL)?('Day '+n):d.slice(5);
+    wrap.appendChild(im); wrap.appendChild(cap); el.appendChild(wrap);
+  });
+  el.scrollLeft=el.scrollWidth;
+}
+function comparePhotos(){
+  const ds=photoDays();
+  if(ds.length<2){alert('Need at least 2 photos to compare.');return;}
+  const a=ds[0], b=ds[ds.length-1];
+  const w=window.open();
+  if(w) w.document.write('<body style="margin:0;background:#000;display:flex">'+
+    [a,b].map(d=>'<div style="flex:1;text-align:center"><img src="'+S.days[d].photo+'" style="width:100%">'+
+    '<div style="color:#fff;font-family:sans-serif;padding:6px">Day '+Math.max(1,dayNum(d))+'</div></div>').join('')+'</body>');
 }
 
 function renderGrid(){
@@ -572,10 +786,19 @@ function setTab(t,btn){
   btn.classList.add('on');
   renderAll();
 }
-function renderAll(){header(); renderRules(); renderWater(); renderFood(); renderLifts(); renderGoals(); renderGrid();}
+function renderAll(){header(); renderRules(); renderWater(); renderFood(); renderMeals(); renderLifts(); renderGoals(); renderGrid(); renderBody(); renderStrip();}
 
+commitStaleDrafts();
 failCheck();
 renderAll();
+// tick the focus timer (browser only)
+if(typeof process==='undefined') setInterval(()=>{
+  const d=S.days[todayS()];
+  if(d&&d.focusStart&&!d.checks.focus){
+    if(document.getElementById('tab-today').classList.contains('on')) renderRules();
+    else checkFocusTimer(d);
+  }
+},1000);
 </script>
 </body>
 </html>
