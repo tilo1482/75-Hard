@@ -5,11 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d0f12">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="apple-touch-icon.png">
 <title>75 HARD</title>
 <style>
   :root{
     --bg:#0d0f12; --card:#171a20; --card2:#1f242c; --line:#2a3038;
-    --txt:#e8eaed; --dim:#8a93a0; --acc:#4ade80; --accD:#166534;
+    --txt:#e8eaed; --dim:#8a93a0; --acc:#4169e1; --accD:#1c2f66;
     --red:#f87171; --amber:#fbbf24; --blue:#60a5fa;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
@@ -40,7 +43,7 @@
   .rule .box{width:26px; height:26px; min-width:26px; border-radius:8px;
     border:2px solid var(--line); display:flex; align-items:center;
     justify-content:center; font-size:15px; color:transparent; transition:.15s;}
-  .rule.done .box{background:var(--acc); border-color:var(--acc); color:#08240f;}
+  .rule.done .box{background:var(--acc); border-color:var(--acc); color:#fff;}
   .rule.done .lbl{color:var(--dim); text-decoration:line-through;}
   .rule.exempt{opacity:.45;}
   .rule .sub{font-size:12px; color:var(--dim); margin-top:1px;}
@@ -52,7 +55,16 @@
   button{background:var(--card2); color:var(--txt); border:1px solid var(--line);
     border-radius:10px; padding:10px 14px; font-size:14px; font-weight:600;}
   button:active{background:var(--line);}
-  button.pri{background:var(--acc); color:#08240f; border-color:var(--acc);}
+  button.pri{background:var(--acc); color:#fff; border-color:var(--acc);}
+  /* page slide */
+  @keyframes slideInL{from{transform:translateX(36px); opacity:.3}to{transform:none; opacity:1}}
+  @keyframes slideInR{from{transform:translateX(-36px); opacity:.3}to{transform:none; opacity:1}}
+  .tabc.sL{animation:slideInL .22s ease;}
+  .tabc.sR{animation:slideInR .22s ease;}
+  /* coach modal */
+  #coachModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:50;
+    align-items:center; justify-content:center; padding:24px;}
+  #coachModal .card{max-width:420px; width:100%; border-color:var(--acc);}
   button.warn{color:var(--red); border-color:#4a2226;}
   .statline{display:flex; justify-content:space-between; font-size:13px; color:var(--dim);}
   .big{font-size:17px; color:var(--txt); font-weight:700;}
@@ -129,15 +141,10 @@
 
 <!-- FOOD -->
 <div class="tabc" id="tab-food">
-  <div class="card" id="coachCard"><h2>Coach — based on yesterday</h2><div id="coachBox" class="hint"></div></div>
   <div class="macroCards" style="grid-template-columns:1fr 1fr 1fr">
     <div class="macro" id="mcCal"><div class="val" id="calVal">0</div><div class="tgt">/ 3,200 cal</div></div>
     <div class="macro" id="mcPro"><div class="val" id="proVal">0</div><div class="tgt">/ 220g pro</div></div>
     <div class="macro" id="mcFat"><div class="val" id="fatVal">0</div><div class="tgt">/ 95g fat cap</div></div>
-  </div>
-  <div class="card">
-    <h2>Saved Meals — tap to log, hold to delete</h2>
-    <div id="mealChips" class="rowBtns"></div>
   </div>
   <div class="card">
     <h2 id="logHead">Log Food</h2>
@@ -156,7 +163,12 @@
     <input type="file" id="camIn" accept="image/*" capture="environment" style="display:none" onchange="photoPicked(this)">
     <p class="hint" style="margin-bottom:0">Family meal you can't measure? Best guess + 20%. Tracked guess beats untracked meal.</p>
   </div>
+  <div class="card">
+    <h2>Saved Meals — tap to log, hold to delete</h2>
+    <div id="mealChips" class="rowBtns"></div>
+  </div>
   <div class="card"><h2>Today's Entries</h2><div id="foodList"></div></div>
+  <div class="card" id="coachCard"><h2>Coach — based on yesterday</h2><div id="coachBox" class="hint"></div></div>
 </div>
 
 <!-- LIFTS -->
@@ -198,7 +210,15 @@
       <button onclick="importData()">Import</button>
       <button class="warn" onclick="hardReset()">Reset all</button>
     </div>
-    <p class="hint">Export regularly — data lives on this device only.</p>
+    <p class="hint" id="bkNudge">Export regularly — data lives on this device only.</p>
+  </div>
+</div>
+
+<div id="coachModal">
+  <div class="card">
+    <h2>Coach — based on yesterday</h2>
+    <div id="coachModalBody" class="hint" style="font-size:14px"></div>
+    <button class="pri" style="width:100%; margin-top:12px" onclick="closeCoach()">Got it</button>
   </div>
 </div>
 
@@ -308,7 +328,9 @@ function header(){
     sub.textContent='75 completed. Phase 2?';
   }else{
     big.innerHTML='DAY <span>'+n+'</span> / '+TOTAL;
-    sub.textContent=new Date().toDateString()+(isSun(t)?' · REST DAY — weigh-in & weekly video day 🎥':'');
+    const now=new Date();
+    sub.textContent=(now.getMonth()+1)+'/'+now.getDate()+'/'+String(now.getFullYear()).slice(2)
+      +(isSun(t)?' · REST DAY — weigh-in & weekly video day 🎥':'');
   }
 }
 
@@ -621,7 +643,7 @@ function renderBody(){
   const ws=S.body.filter(b=>b.w).map(b=>({x:b.d,y:b.w}));
   if(!ws.length){el.innerHTML='<p class="hint">Log your weight each Sunday. Trend shows here.</p>';return;}
   el.innerHTML='<div class="hint" style="margin-top:8px">Weight: '+ws[0].y+' → <b style="color:var(--acc)">'+ws[ws.length-1].y+' lb</b></div>'+
-    '<svg width="100%" height="60" viewBox="0 0 300 60" preserveAspectRatio="none">'+sline(ws,'#4ade80',300,60)+'</svg>';
+    '<svg width="100%" height="60" viewBox="0 0 300 60" preserveAspectRatio="none">'+sline(ws,'#4169e1',300,60)+'</svg>';
 }
 // ----- photo timeline -----
 function photoDays(){
@@ -667,7 +689,15 @@ function renderGrid(){
   document.getElementById('doneCount').textContent=done+' / '+TOTAL+' days complete';
 }
 
+function backupNudge(){
+  const el=document.getElementById('bkNudge');
+  const since=S.lastExport?Math.floor((s2d(todayS())-s2d(S.lastExport))/86400000):null;
+  if(since===null) el.innerHTML='<b style="color:var(--amber)">No backup yet</b> — your streak lives on this phone only. Tap Export.';
+  else if(since>=7||isSun(todayS())&&since>0) el.innerHTML='<b style="color:var(--amber)">Backup time</b> — last export '+since+' day'+(since===1?'':'s')+' ago. Tap Export.';
+  else el.textContent='Last backup: '+(since===0?'today':since+' day'+(since===1?'':'s')+' ago')+'. Weekly exports keep the streak safe.';
+}
 function exportData(){
+  S.lastExport=todayS(); save(); backupNudge();
   const blob=new Blob([JSON.stringify(S)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
@@ -779,14 +809,46 @@ async function analyzeMeal(b64,st){
   }
 }
 
+const TABS=['today','food','lifts','prog'];
+let curTab='today';
 function setTab(t,btn){
-  document.querySelectorAll('.tabc').forEach(e=>e.classList.remove('on'));
-  document.getElementById('tab-'+t).classList.add('on');
+  const dir=TABS.indexOf(t)>TABS.indexOf(curTab)?'sL':'sR';
+  const same=t===curTab;
+  curTab=t;
+  document.querySelectorAll('.tabc').forEach(e=>e.classList.remove('on','sL','sR'));
+  const pane=document.getElementById('tab-'+t);
+  pane.classList.add('on'); if(!same) pane.classList.add(dir);
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
+  (btn||document.querySelector('nav button[data-t="'+t+'"]')).classList.add('on');
   renderAll();
+  if(t==='food') maybePopCoach();
 }
-function renderAll(){header(); renderRules(); renderWater(); renderFood(); renderMeals(); renderLifts(); renderGoals(); renderGrid(); renderBody(); renderStrip();}
+// coach popup: first Food visit each day
+function shouldPopCoach(){return S.coachSeen!==todayS();}
+function maybePopCoach(){
+  if(!shouldPopCoach()) return;
+  S.coachSeen=todayS(); save();
+  document.getElementById('coachModalBody').innerHTML=document.getElementById('coachBox').innerHTML;
+  document.getElementById('coachModal').style.display='flex';
+}
+function closeCoach(){document.getElementById('coachModal').style.display='none';}
+// swipe navigation
+let swX=null, swY=null, swOk=false;
+document.addEventListener('touchstart',e=>{
+  const tgt=e.target;
+  swOk=!(tgt.closest&&(tgt.closest('#photoStrip')||tgt.closest('input,select,textarea')));
+  swX=e.touches[0].clientX; swY=e.touches[0].clientY;
+},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(!swOk||swX===null) return;
+  const dx=e.changedTouches[0].clientX-swX, dy=e.changedTouches[0].clientY-swY;
+  swX=null;
+  if(Math.abs(dx)<60||Math.abs(dx)<2*Math.abs(dy)) return;
+  const i=TABS.indexOf(curTab)+(dx<0?1:-1);
+  if(i<0||i>=TABS.length) return;
+  setTab(TABS[i]);
+},{passive:true});
+function renderAll(){header(); renderRules(); renderWater(); renderFood(); renderMeals(); renderLifts(); renderGoals(); renderGrid(); renderBody(); renderStrip(); backupNudge();}
 
 commitStaleDrafts();
 failCheck();
