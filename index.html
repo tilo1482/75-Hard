@@ -207,9 +207,10 @@
     <h2>Backup</h2>
     <div class="rowBtns">
       <button onclick="exportData()">Export data</button>
-      <button onclick="importData()">Import</button>
+      <button onclick="document.getElementById('impFile').click()">Import</button>
       <button class="warn" onclick="hardReset()">Reset all</button>
     </div>
+    <input type="file" id="impFile" accept=".json,application/json" style="display:none" onchange="importFile(this)">
     <p class="hint" id="bkNudge">Export regularly — data lives on this device only.</p>
   </div>
 </div>
@@ -245,7 +246,7 @@ const RULES=[
   {id:'sleep',  lbl:'8 hours of sleep', sub:'last night counts for today'},
   {id:'journal',lbl:'Journal entry', sub:'wins, struggles, tomorrow’s plan'},
   {id:'nutrition',lbl:'Nutrition on target', sub:'~3,200 cal · 220g protein · no fried · no sugar'},
-  {id:'focus',  lbl:'45 min focused work', sub:'tap to start the timer — one distraction-free block'},
+  {id:'focus',  lbl:'45 min focused work', sub:'one distraction-free block — business, study, reading'},
   {id:'photo',  lbl:'Progress photo', sub:'same spot, same pose'}
 ];
 const WORKOUTS={
@@ -271,15 +272,6 @@ function load(){
   });
   return s;
 }
-// ----- focus timer (45:00) -----
-const FOCUS_SEC=45*60;
-function checkFocusTimer(d){
-  if(d.checks.focus||!d.focusStart) return null;
-  const rem=FOCUS_SEC-(Date.now()-d.focusStart)/1000;
-  if(rem<=0){ d.checks.focus=true; delete d.focusStart; save(); return 0; }
-  return rem;
-}
-function fmtT(s){s=Math.ceil(s); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 function save(){localStorage.setItem(KEY,JSON.stringify(S));}
 function d2s(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function s2d(s){const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
@@ -343,11 +335,6 @@ function renderRules(){
     row.className='rule'+(d.checks[r.id]?' done':'')+(ex?' exempt':'');
     let sub=r.sub;
     if(r.id==='nutrition'){const f=totals(d); sub=f.c+' cal · '+f.p+'g pro · '+f.f+'g fat logged so far';}
-    if(r.id==='focus'){
-      const rem=checkFocusTimer(d);
-      if(d.checks.focus) sub='45 minutes — done';
-      else if(rem!==null) sub='⏱ '+fmtT(rem)+' remaining — tap to cancel';
-    }
     row.innerHTML='<div class="box">✓</div><div><div class="lbl">'+r.lbl+(ex?' — exempt':'')+'</div><div class="sub">'+sub+'</div></div>';
     if(r.id==='photo'&&d.photo){
       const im=document.createElement('img'); im.className='pthumb'; im.src=d.photo;
@@ -356,10 +343,6 @@ function renderRules(){
     }
     if(!ex) row.onclick=()=>{
       if(r.id==='photo'&&!d.checks.photo){ document.getElementById('progCam').click(); return; }
-      if(r.id==='focus'&&!d.checks.focus){
-        if(d.focusStart){ if(confirm('Cancel this focus session? The clock starts over.')){delete d.focusStart; save(); renderAll();} return; }
-        d.focusStart=Date.now(); save(); renderAll(); return;
-      }
       d.checks[r.id]=!d.checks[r.id]; save(); renderAll();
     };
     el.appendChild(row);
@@ -696,19 +679,35 @@ function backupNudge(){
   else if(since>=7||isSun(todayS())&&since>0) el.innerHTML='<b style="color:var(--amber)">Backup time</b> — last export '+since+' day'+(since===1?'':'s')+' ago. Tap Export.';
   else el.textContent='Last backup: '+(since===0?'today':since+' day'+(since===1?'':'s')+' ago')+'. Weekly exports keep the streak safe.';
 }
-function exportData(){
+async function exportData(){
   S.lastExport=todayS(); save(); backupNudge();
-  const blob=new Blob([JSON.stringify(S)],{type:'application/json'});
+  const name='75hard-backup-'+todayS()+'.json';
+  const json=JSON.stringify(S);
+  try{
+    const file=new File([json],name,{type:'application/json'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:'75 HARD backup'});
+      return;
+    }
+  }catch(e){ if(e.name==='AbortError') return; }
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='75hard-backup-'+todayS()+'.json';
-  a.click();
+  a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));
+  a.download=name; a.click();
 }
-function importData(){
-  const j=prompt('Paste backup JSON:');
-  if(!j) return;
-  try{const s=JSON.parse(j); if(s.start){S=s; save(); renderAll(); alert('Imported.');} }
-  catch(e){alert('Invalid JSON.');}
+function importFile(inp){
+  const f=inp.files[0]; inp.value='';
+  if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const s=JSON.parse(rd.result);
+      if(!s.start) throw new Error('bad');
+      localStorage.setItem(KEY,JSON.stringify(s));
+      S=load();
+      renderAll(); alert('Backup restored — '+Object.keys(S.days).length+' days of data loaded.');
+    }catch(e){alert('That file isn\'t a valid 75 HARD backup.');}
+  };
+  rd.readAsText(f);
 }
 function hardReset(){
   if(confirm('Wipe ALL data and start over?')&&confirm('Really? No undo.')){
@@ -853,14 +852,6 @@ function renderAll(){header(); renderRules(); renderWater(); renderFood(); rende
 commitStaleDrafts();
 failCheck();
 renderAll();
-// tick the focus timer (browser only)
-if(typeof process==='undefined') setInterval(()=>{
-  const d=S.days[todayS()];
-  if(d&&d.focusStart&&!d.checks.focus){
-    if(document.getElementById('tab-today').classList.contains('on')) renderRules();
-    else checkFocusTimer(d);
-  }
-},1000);
 </script>
 </body>
 </html>
