@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#191817">
+<meta name="theme-color" content="#0d0f12">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
 <title>75 HARD</title>
 <style>
   :root{
-    --bg:#191817; --card:#232120; --card2:#2d2a27; --line:#3a3733;
-    --txt:#efece7; --dim:#969087; --acc:#f97316; --accD:#7c2d12;
+    --bg:#0d0f12; --card:#171a20; --card2:#1f242c; --line:#2a3038;
+    --txt:#e8eaed; --dim:#8a93a0; --acc:#4ade80; --accD:#166534;
     --red:#f87171; --amber:#fbbf24; --blue:#60a5fa;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
@@ -43,7 +43,7 @@
   .rule .box{width:26px; height:26px; min-width:26px; border-radius:8px;
     border:2px solid var(--line); display:flex; align-items:center;
     justify-content:center; font-size:15px; color:transparent; transition:.15s;}
-  .rule.done .box{background:var(--acc); border-color:var(--acc); color:#2b1102;}
+  .rule.done .box{background:var(--acc); border-color:var(--acc); color:#08240f;}
   .rule.done .lbl{color:var(--dim); text-decoration:line-through;}
   .rule.exempt{opacity:.45;}
   .rule .sub{font-size:12px; color:var(--dim); margin-top:1px;}
@@ -55,12 +55,12 @@
   button{background:var(--card2); color:var(--txt); border:1px solid var(--line);
     border-radius:10px; padding:10px 14px; font-size:14px; font-weight:600;}
   button:active{background:var(--line);}
-  button.pri{background:var(--acc); color:#2b1102; border-color:var(--acc);}
+  button.pri{background:var(--acc); color:#08240f; border-color:var(--acc);}
   /* page slide */
-  @keyframes slideInL{from{transform:translateX(36px); opacity:.3}to{transform:none; opacity:1}}
-  @keyframes slideInR{from{transform:translateX(-36px); opacity:.3}to{transform:none; opacity:1}}
-  .tabc.sL{animation:slideInL .22s ease;}
-  .tabc.sR{animation:slideInR .22s ease;}
+  @keyframes slideInL{from{transform:translateX(56px); opacity:.5}to{transform:none; opacity:1}}
+  @keyframes slideInR{from{transform:translateX(-56px); opacity:.5}to{transform:none; opacity:1}}
+  .tabc.sL{animation:slideInL .32s cubic-bezier(.22,.61,.36,1);}
+  .tabc.sR{animation:slideInR .32s cubic-bezier(.22,.61,.36,1);}
   /* coach modal */
   #coachModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:50;
     align-items:center; justify-content:center; padding:24px;}
@@ -643,7 +643,7 @@ function renderBody(){
   const ws=S.body.filter(b=>b.w).map(b=>({x:b.d,y:b.w}));
   if(!ws.length){el.innerHTML='<p class="hint">Log your weight each Sunday. Trend shows here.</p>';return;}
   el.innerHTML='<div class="hint" style="margin-top:8px">Weight: '+ws[0].y+' → <b style="color:var(--acc)">'+ws[ws.length-1].y+' lb</b></div>'+
-    '<svg width="100%" height="60" viewBox="0 0 300 60" preserveAspectRatio="none">'+sline(ws,'#f97316',300,60)+'</svg>';
+    '<svg width="100%" height="60" viewBox="0 0 300 60" preserveAspectRatio="none">'+sline(ws,'#4ade80',300,60)+'</svg>';
 }
 // ----- photo timeline -----
 function photoDays(){
