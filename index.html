@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0d0f12">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
-<title>75 HARD</title>
+<title>Fitness Tracker</title>
 <style>
   :root{
     --bg:#0d0f12; --card:#171a20; --card2:#1f242c; --line:#2a3038;
@@ -24,13 +24,13 @@
   #dayBig{font-size:44px; font-weight:800; margin:2px 0 0;}
   #dayBig span{color:var(--acc);}
   #subLine{color:var(--dim); font-size:13px; margin-top:2px;}
-  #banner{display:none; margin:10px 16px; padding:12px 14px; border-radius:12px;
-    background:#3a1215; color:var(--red); font-size:14px; font-weight:600;}
   .tabc{display:none; padding:0 16px;}
   .tabc.on{display:block;}
   .pthumb{width:34px; height:34px; border-radius:8px; object-fit:cover; margin-left:auto;}
-  .tthumb{width:64px; height:80px; object-fit:cover; border-radius:8px; flex:none;}
   .chip{padding:8px 12px; border-radius:20px; font-size:13px;}
+  .icon{width:17px; height:17px; vertical-align:-4px; flex:none;}
+  .icon.sm{width:14px; height:14px; vertical-align:-2px;}
+  nav .ico svg{width:20px; height:20px;}
   .entry.editing{outline:1px solid var(--acc); border-radius:8px;}
   .card{background:var(--card); border:1px solid var(--line); border-radius:14px;
     padding:14px; margin-bottom:12px;}
@@ -95,12 +95,6 @@
   .setRow input{margin-top:6px; padding:9px; text-align:center;}
   .setRow .hint{margin-top:6px; text-align:center;}
   .addSet{margin-top:8px; padding:7px 12px; font-size:13px;}
-  /* grid */
-  #grid{display:grid; grid-template-columns:repeat(10,1fr); gap:5px;}
-  .cell{aspect-ratio:1; border-radius:6px; background:var(--card2);
-    display:flex; align-items:center; justify-content:center; font-size:9px; color:var(--dim);}
-  .cell.done{background:var(--accD); color:var(--acc); font-weight:700;}
-  .cell.today{outline:2px solid var(--acc); color:var(--txt); font-weight:700;}
   /* nav */
   nav{position:fixed; bottom:0; left:0; right:0; display:flex;
     background:var(--card); border-top:1px solid var(--line);
@@ -116,11 +110,10 @@
 </head>
 <body>
 <header>
-  <h1>75 HARD</h1>
+  <h1>FITNESS TRACKER</h1>
   <div id="dayBig"></div>
   <div id="subLine"></div>
 </header>
-<div id="banner"></div>
 
 <!-- TODAY -->
 <div class="tabc on" id="tab-today">
@@ -137,6 +130,24 @@
       <button onclick="addWater(-8)">−8</button>
     </div>
   </div>
+  <div class="card">
+    <h2>Body — Weekly Check-in (Sundays)</h2>
+    <div class="foodRow" style="grid-template-columns:1fr 74px">
+      <input id="bwW" type="number" step="0.1" inputmode="decimal" placeholder="weight lb">
+      <button class="pri" onclick="logBody()">Log</button>
+    </div>
+    <div id="bodyChart"></div>
+  </div>
+  <div class="card">
+    <h2>Backup</h2>
+    <div class="rowBtns">
+      <button onclick="exportData()">Export data</button>
+      <button onclick="document.getElementById('impFile').click()">Import</button>
+      <button class="warn" onclick="hardReset()">Reset all</button>
+    </div>
+    <input type="file" id="impFile" accept=".json,application/json" style="display:none" onchange="importFile(this)">
+    <p class="hint" id="bkNudge">Export regularly — data lives on this device only.</p>
+  </div>
 </div>
 
 <!-- FOOD -->
@@ -144,7 +155,7 @@
   <div class="macroCards" style="grid-template-columns:1fr 1fr 1fr">
     <div class="macro" id="mcCal"><div class="val" id="calVal">0</div><div class="tgt">/ 3,200 cal</div></div>
     <div class="macro" id="mcPro"><div class="val" id="proVal">0</div><div class="tgt">/ 220g pro</div></div>
-    <div class="macro" id="mcFat"><div class="val" id="fatVal">0</div><div class="tgt">/ 95g fat cap</div></div>
+    <div class="macro" id="mcFat"><div class="val" id="fatVal">0</div><div class="tgt">/ 100g fat cap</div></div>
   </div>
   <div class="card">
     <h2 id="logHead">Log Food</h2>
@@ -156,8 +167,8 @@
     </div>
     <button class="pri" style="width:100%" id="addBtn" onclick="addFood()">Add</button>
     <div class="rowBtns" style="margin-top:8px">
-      <button style="flex:1" onclick="snapMeal()">📷 Snap meal → auto macros</button>
-      <button onclick="setKey()">🔑</button>
+      <button style="flex:1" onclick="snapMeal()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2h6l2 2h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="14" r="3.5"/></svg> Snap meal → auto macros</button>
+      <button onclick="setKey()" title="API key"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M14 9l2 2"/></svg></button>
     </div>
     <div class="hint" id="snapStatus"></div>
     <input type="file" id="camIn" accept="image/*" capture="environment" style="display:none" onchange="photoPicked(this)">
@@ -183,38 +194,6 @@
   </div>
 </div>
 
-<!-- PROGRESS -->
-<div class="tabc" id="tab-prog">
-  <div class="card">
-    <h2>Challenge Map</h2>
-    <div id="grid"></div>
-    <p class="statline" style="margin:10px 0 0"><span>Attempt <b id="attemptN"></b></span><span id="doneCount"></span></p>
-  </div>
-  <div class="card">
-    <h2>Body — Weekly Check-in (Sundays)</h2>
-    <div class="foodRow" style="grid-template-columns:1fr 74px">
-      <input id="bwW" type="number" step="0.1" inputmode="decimal" placeholder="weight lb">
-      <button class="pri" onclick="logBody()">Log</button>
-    </div>
-    <div id="bodyChart"></div>
-  </div>
-  <div class="card">
-    <h2>Photo Timeline</h2>
-    <div id="photoStrip" style="display:flex; gap:6px; overflow-x:auto"></div>
-    <button style="width:100%; margin-top:8px" onclick="comparePhotos()">Day 1 vs Latest</button>
-  </div>
-  <div class="card">
-    <h2>Backup</h2>
-    <div class="rowBtns">
-      <button onclick="exportData()">Export data</button>
-      <button onclick="document.getElementById('impFile').click()">Import</button>
-      <button class="warn" onclick="hardReset()">Reset all</button>
-    </div>
-    <input type="file" id="impFile" accept=".json,application/json" style="display:none" onchange="importFile(this)">
-    <p class="hint" id="bkNudge">Export regularly — data lives on this device only.</p>
-  </div>
-</div>
-
 <div id="coachModal">
   <div class="card">
     <h2>Coach — based on yesterday</h2>
@@ -224,14 +203,13 @@
 </div>
 
 <nav>
-  <button class="on" data-t="today" onclick="setTab('today',this)"><span class="ico">☑︎</span>Today</button>
-  <button data-t="food" onclick="setTab('food',this)"><span class="ico">🍗</span>Food</button>
-  <button data-t="lifts" onclick="setTab('lifts',this)"><span class="ico">🏋️</span>Lifts</button>
-  <button data-t="prog" onclick="setTab('prog',this)"><span class="ico">📈</span>Progress</button>
+  <button class="on" data-t="today" onclick="setTab('today',this)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7.5 12.5l3 3 6-7"/></svg></span>Today</button>
+  <button data-t="food" onclick="setTab('food',this)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v8M9 2v8M11 2v8M9 10v12"/><path d="M16 2c-1.5 1-2 3-2 5s1 3 2 4v11"/></svg></span>Food</button>
+  <button data-t="lifts" onclick="setTab('lifts',this)"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="9" width="3" height="6" rx="1"/><rect x="4" y="7" width="2" height="10" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/><rect x="18" y="7" width="2" height="10" rx="1"/><rect x="20" y="9" width="3" height="6" rx="1"/></svg></span>Lifts</button>
 </nav>
 
 <script>
-const KEY='hard75_v1', TOTAL=75, CAL_T=3200, PRO_T=220, FAT_T=95, WATER_T=128;
+const KEY='hard75_v1', CAL_T=3200, PRO_T=220, FAT_T=100, WATER_T=128;
 const DEADLINE='2026-12-31';
 const GOALS={
   'Flat Bench':{t:315, base:275, baseDate:'2026-07-03'},
@@ -246,7 +224,7 @@ const RULES=[
   {id:'sleep',  lbl:'8 hours of sleep', sub:'last night counts for today'},
   {id:'journal',lbl:'Journal entry', sub:'wins, struggles, tomorrow’s plan'},
   {id:'nutrition',lbl:'Nutrition on target', sub:'~3,200 cal · 220g protein · no fried · no sugar'},
-  {id:'focus',  lbl:'45 min focused work', sub:'one distraction-free block — business, study, reading'},
+  {id:'focus',  lbl:'Self work', sub:'45 min — one distraction-free block — business, study, reading'},
   {id:'photo',  lbl:'Progress photo', sub:'same spot, same pose'}
 ];
 const WORKOUTS={
@@ -264,7 +242,7 @@ let S=load();
 function load(){
   let s=null;
   try{s=JSON.parse(localStorage.getItem(KEY));}catch(e){}
-  if(!s||!s.start) s={start:'2026-07-06', attempt:1, days:{}, ex:{}};
+  if(!s) s={days:{}, ex:{}};
   s.meals=s.meals||[]; s.drafts=s.drafts||{}; s.body=s.body||[];
   // migrate: 'read 10 pages' rule renamed to 'focus' — keep old checkmarks valid
   Object.values(s.days).forEach(d=>{
@@ -278,52 +256,14 @@ function s2d(s){const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
 function todayS(){return d2s(new Date());}
 function isSun(ds){return s2d(ds).getDay()===0;}
 function day(ds){ if(!S.days[ds]) S.days[ds]={checks:{},water:0,food:[],lifts:null}; return S.days[ds]; }
-function dayNum(ds){ return Math.floor((s2d(ds)-s2d(S.start))/86400000)+1; }
-
-function complete(ds){
-  const d=S.days[ds]; if(!d) return false;
-  for(const r of RULES){
-    if(r.ex==='sun'&&isSun(ds)) continue;
-    if(!d.checks[r.id]) return false;
-  }
-  return d.water>=WATER_T;
-}
-
-// fail check: any past day since start incomplete → full reset
-function failCheck(){
-  const t=todayS(); if(t<=S.start) return;
-  let cur=s2d(S.start);
-  while(d2s(cur)<t){
-    const ds=d2s(cur);
-    const n=dayNum(ds);
-    if(n>=1&&n<=TOTAL&&!complete(ds)){
-      S.attempt++; S.start=t; save();
-      const b=document.getElementById('banner');
-      b.style.display='block';
-      b.textContent='Day '+n+' was incomplete. Full reset — today is Day 1 of attempt '+S.attempt+'. Lock back in.';
-      return;
-    }
-    if(n>=TOTAL) break;
-    cur.setDate(cur.getDate()+1);
-  }
-}
 
 function header(){
-  const t=todayS(), n=dayNum(t);
+  const t=todayS();
   const big=document.getElementById('dayBig'), sub=document.getElementById('subLine');
-  if(t<S.start){
-    const wait=Math.ceil((s2d(S.start)-s2d(t))/86400000);
-    big.innerHTML='T–'+wait;
-    sub.textContent='Starts Monday July 6. Prep mode — logging still works.';
-  }else if(n>TOTAL){
-    big.innerHTML='<span>DONE ✔</span>';
-    sub.textContent='75 completed. Phase 2?';
-  }else{
-    big.innerHTML='DAY <span>'+n+'</span> / '+TOTAL;
-    const now=new Date();
-    sub.textContent=(now.getMonth()+1)+'/'+now.getDate()+'/'+String(now.getFullYear()).slice(2)
-      +(isSun(t)?' · REST DAY — weigh-in & weekly video day 🎥':'');
-  }
+  const now=new Date();
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  big.textContent=days[now.getDay()]+', '+(now.getMonth()+1)+'/'+now.getDate();
+  sub.textContent=isSun(t)?'REST DAY — weigh-in day':'';
 }
 
 function renderRules(){
@@ -388,7 +328,7 @@ function renderFood(){
   d.food.forEach((e,i)=>{
     const row=document.createElement('div'); row.className='entry'+(i===editIdx?' editing':'');
     row.innerHTML='<div>'+e.n+'<div class="m">'+e.c+' cal · '+e.p+'g pro · '+(e.f||0)+'g fat · tap to edit</div></div>';
-    const sv=document.createElement('button'); sv.className='del'; sv.textContent='💾'; sv.title='Save as meal';
+    const sv=document.createElement('button'); sv.className='del'; sv.innerHTML='<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12a1 1 0 0 1 1 1v16l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>'; sv.title='Save as meal';
     sv.onclick=ev=>{ev.stopPropagation(); saveAsMeal(e);};
     const del=document.createElement('button'); del.className='del'; del.textContent='✕';
     del.onclick=ev=>{ev.stopPropagation(); d.food.splice(i,1); if(editIdx===i) cancelEdit(); save(); renderFood(); renderRules();};
@@ -458,7 +398,7 @@ function renderMeals(){
   const add=document.createElement('button'); add.className='chip'; add.textContent='＋';
   add.onclick=newMealFromForm; box.appendChild(add);
   if(!S.meals.length){const h=document.createElement('span'); h.className='hint';
-    h.textContent=' Log a meal below, then tap 💾 on it — or fill the form and tap ＋.'; box.appendChild(h);}
+    h.innerHTML=' Log a meal below, then tap <svg class="icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12a1 1 0 0 1 1 1v16l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg> on it — or fill the form and tap ＋.'; box.appendChild(h);}
 }
 
 // ----- progression engine -----
@@ -628,50 +568,6 @@ function renderBody(){
   el.innerHTML='<div class="hint" style="margin-top:8px">Weight: '+ws[0].y+' → <b style="color:var(--acc)">'+ws[ws.length-1].y+' lb</b></div>'+
     '<svg width="100%" height="60" viewBox="0 0 300 60" preserveAspectRatio="none">'+sline(ws,'#4ade80',300,60)+'</svg>';
 }
-// ----- photo timeline -----
-function photoDays(){
-  return Object.keys(S.days).filter(ds=>S.days[ds].photo).sort();
-}
-function renderStrip(){
-  const el=document.getElementById('photoStrip');
-  const ds=photoDays();
-  if(!ds.length){el.innerHTML='<span class="hint">Progress photos land here.</span>';return;}
-  el.innerHTML='';
-  ds.forEach(d=>{
-    const wrap=document.createElement('div'); wrap.style.textAlign='center'; wrap.style.flex='none';
-    const im=document.createElement('img'); im.className='tthumb'; im.src=S.days[d].photo;
-    im.onclick=()=>viewPhoto(S.days[d].photo);
-    const cap=document.createElement('div'); cap.className='hint';
-    const n=dayNum(d); cap.textContent=(n>=1&&n<=TOTAL)?('Day '+n):d.slice(5);
-    wrap.appendChild(im); wrap.appendChild(cap); el.appendChild(wrap);
-  });
-  el.scrollLeft=el.scrollWidth;
-}
-function comparePhotos(){
-  const ds=photoDays();
-  if(ds.length<2){alert('Need at least 2 photos to compare.');return;}
-  const a=ds[0], b=ds[ds.length-1];
-  const w=window.open();
-  if(w) w.document.write('<body style="margin:0;background:#000;display:flex">'+
-    [a,b].map(d=>'<div style="flex:1;text-align:center"><img src="'+S.days[d].photo+'" style="width:100%">'+
-    '<div style="color:#fff;font-family:sans-serif;padding:6px">Day '+Math.max(1,dayNum(d))+'</div></div>').join('')+'</body>');
-}
-
-function renderGrid(){
-  const g=document.getElementById('grid'); g.innerHTML='';
-  const t=todayS(); let done=0;
-  for(let i=1;i<=TOTAL;i++){
-    const d=s2d(S.start); d.setDate(d.getDate()+i-1);
-    const ds=d2s(d);
-    const c=document.createElement('div'); c.className='cell'; c.textContent=i;
-    if(complete(ds)){c.classList.add('done'); done++;}
-    if(ds===t) c.classList.add('today');
-    g.appendChild(c);
-  }
-  document.getElementById('attemptN').textContent=S.attempt;
-  document.getElementById('doneCount').textContent=done+' / '+TOTAL+' days complete';
-}
-
 function backupNudge(){
   const el=document.getElementById('bkNudge');
   const since=S.lastExport?Math.floor((s2d(todayS())-s2d(S.lastExport))/86400000):null;
@@ -701,11 +597,11 @@ function importFile(inp){
   rd.onload=()=>{
     try{
       const s=JSON.parse(rd.result);
-      if(!s.start) throw new Error('bad');
+      if(!s.days) throw new Error('bad');
       localStorage.setItem(KEY,JSON.stringify(s));
       S=load();
       renderAll(); alert('Backup restored — '+Object.keys(S.days).length+' days of data loaded.');
-    }catch(e){alert('That file isn\'t a valid 75 HARD backup.');}
+    }catch(e){alert('That file isn\'t a valid backup.');}
   };
   rd.readAsText(f);
 }
@@ -808,7 +704,7 @@ async function analyzeMeal(b64,st){
   }
 }
 
-const TABS=['today','food','lifts','prog'];
+const TABS=['today','food','lifts'];
 let curTab='today';
 function setTab(t,btn){
   const dir=TABS.indexOf(t)>TABS.indexOf(curTab)?'sL':'sR';
@@ -835,7 +731,7 @@ function closeCoach(){document.getElementById('coachModal').style.display='none'
 let swX=null, swY=null, swOk=false;
 document.addEventListener('touchstart',e=>{
   const tgt=e.target;
-  swOk=!(tgt.closest&&(tgt.closest('#photoStrip')||tgt.closest('input,select,textarea')));
+  swOk=!(tgt.closest&&tgt.closest('input,select,textarea'));
   swX=e.touches[0].clientX; swY=e.touches[0].clientY;
 },{passive:true});
 document.addEventListener('touchend',e=>{
@@ -847,10 +743,9 @@ document.addEventListener('touchend',e=>{
   if(i<0||i>=TABS.length) return;
   setTab(TABS[i]);
 },{passive:true});
-function renderAll(){header(); renderRules(); renderWater(); renderFood(); renderMeals(); renderLifts(); renderGoals(); renderGrid(); renderBody(); renderStrip(); backupNudge();}
+function renderAll(){header(); renderRules(); renderWater(); renderFood(); renderMeals(); renderLifts(); renderGoals(); renderBody(); backupNudge();}
 
 commitStaleDrafts();
-failCheck();
 renderAll();
 </script>
 </body>
