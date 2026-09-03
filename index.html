@@ -24,14 +24,18 @@
     --red:#dc2626; --amber:#b45309; --blue:#2563eb; --onAcc:#ffffff;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html{scrollbar-width:none; -ms-overflow-style:none;}
+  html::-webkit-scrollbar{display:none;}
   body{margin:0; background:var(--bg); color:var(--txt);
     font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-    padding-bottom:90px;}
+    padding-bottom:90px; scrollbar-width:none; -ms-overflow-style:none;}
+  body::-webkit-scrollbar{display:none;}
   header{padding:16px 16px 10px; text-align:center; position:relative;}
   .themeBtn{position:absolute; top:23px; right:30px; background:none; border:none; padding:6px; color:var(--dim);}
   .themeBtn:active{background:none; color:var(--txt);}
   .dateRow{display:flex; align-items:center; justify-content:center; gap:12px;}
   .appIconMark{width:48px; height:48px; flex:none; color:var(--acc);}
+  .dateSpacer{width:48px; flex:none;}
   .dateBadge{position:relative; display:inline-block;}
   .badgeBase, .badgeFill{
     display:block; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:36px; letter-spacing:1px;
@@ -81,9 +85,9 @@
   .tabc.sL{animation:slideInL .32s cubic-bezier(.22,.61,.36,1);}
   .tabc.sR{animation:slideInR .32s cubic-bezier(.22,.61,.36,1);}
   /* coach modal */
-  #coachModal, #mealsModal, #goalsModal, #addTaskModal, #confirmModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:50;
+  #coachModal, #mealsModal, #goalsModal, #addTaskModal, #confirmModal, #customGoalModal, #updateGoalModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:50;
     align-items:center; justify-content:center; padding:24px;}
-  #coachModal .card, #mealsModal .card, #goalsModal .card, #addTaskModal .card, #confirmModal .card{max-width:420px; width:100%; border-color:var(--acc); max-height:80vh; overflow-y:auto;}
+  #coachModal .card, #mealsModal .card, #goalsModal .card, #addTaskModal .card, #confirmModal .card, #customGoalModal .card, #updateGoalModal .card{max-width:420px; width:100%; border-color:var(--acc); max-height:80vh; overflow-y:auto;}
   #toast{position:fixed; left:50%; bottom:78px; transform:translateX(-50%) translateY(12px);
     background:var(--card2); color:var(--txt); border:1px solid var(--line); border-radius:12px;
     padding:12px 18px; font-size:14px; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,.4);
@@ -173,6 +177,7 @@
       <div id="dayBig" class="badgeBase"></div>
       <div id="dateFill" class="badgeFill"><span id="dateFillText"></span></div>
     </div>
+    <div class="dateSpacer" aria-hidden="true"></div>
   </div>
   <div id="subLine"></div>
 </header>
@@ -237,6 +242,9 @@
       </div>
       <label class="hint" for="setDeadline">Goal date</label>
       <input id="setDeadline" type="date">
+      <p class="hint" style="margin:14px 0 4px">Custom goals</p>
+      <div id="customGoalsEditList"></div>
+      <button type="button" style="width:100%; margin-top:6px" onclick="openCustomGoalModal()">+ Add Goal</button>
       <div class="rowBtns" style="margin-top:10px">
         <button style="flex:1" onclick="cancelGoalsEdit()">Cancel</button>
         <button class="pri" style="flex:1" onclick="saveSettings()">Save Goals</button>
@@ -407,6 +415,38 @@
   </div>
 </div>
 
+<div id="customGoalModal">
+  <div class="card">
+    <h2>Add Goal</h2>
+    <label class="hint" for="cgName">Name</label>
+    <input id="cgName" type="text" maxlength="28" placeholder="e.g. Mile Time">
+    <div class="wxr" style="margin-top:10px">
+      <input id="cgTarget" type="number" inputmode="decimal" step="any" placeholder="Target value">
+      <span class="hint">in</span>
+      <input id="cgUnit" type="text" maxlength="10" placeholder="unit">
+    </div>
+    <label class="hint" style="display:flex; align-items:center; gap:8px; margin-top:12px; cursor:pointer;">
+      <input id="cgDir" type="checkbox" style="width:auto; flex:none;"> Lower value is better (e.g. race time)
+    </label>
+    <div class="rowBtns" style="margin-top:14px">
+      <button style="flex:1" onclick="closeCustomGoalModal()">Cancel</button>
+      <button class="pri" style="flex:1" onclick="saveCustomGoal()">Add</button>
+    </div>
+  </div>
+</div>
+
+<div id="updateGoalModal">
+  <div class="card">
+    <h2 id="updateGoalTitle">Update Value</h2>
+    <label class="hint" for="ugValue" id="updateGoalLabel">Current value</label>
+    <input id="ugValue" type="number" inputmode="decimal" step="any">
+    <div class="rowBtns" style="margin-top:14px">
+      <button style="flex:1" onclick="closeUpdateGoalModal()">Cancel</button>
+      <button class="pri" style="flex:1" onclick="saveUpdateGoal()">Save</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <div id="photoScreen">
@@ -538,7 +578,7 @@ function load(){
   let s=null;
   try{s=JSON.parse(localStorage.getItem(KEY));}catch(e){}
   if(!s) s={days:{}, ex:{}};
-  s.meals=s.meals||[]; s.drafts=s.drafts||{}; s.body=s.body||[]; s.customRules=s.customRules||[];
+  s.meals=s.meals||[]; s.drafts=s.drafts||{}; s.body=s.body||[]; s.customRules=s.customRules||[]; s.customGoals=s.customGoals||[];
   const defGoals={...DEFAULT_SETTINGS.goals};
   s.settings=Object.assign({}, DEFAULT_SETTINGS, s.settings||{});
   s.settings.goals=Object.assign(defGoals, s.settings.goals||{});
@@ -874,14 +914,7 @@ function fmtDate(ds){
 function renderGoals(){
   const box=document.getElementById('goalBox'); box.innerHTML='';
   document.getElementById('goalDeadline').textContent=fmtDate(S.settings.deadline);
-  const sel=document.getElementById('woSel');
-  const wo=WORKOUTS[sel.value]?sel.value:Object.keys(WORKOUTS)[0];
-  const exNames=(WORKOUTS[wo]||[]).map(([name])=>name);
-  const goalNames=Object.keys(S.settings.goals).filter(name=>exNames.includes(name));
-  if(!goalNames.length){
-    box.innerHTML='<p class="hint">No goal lift in this session — goals show up on the day you train them.</p>';
-    return;
-  }
+  const goalNames=Object.keys(S.settings.goals);
   goalNames.forEach(name=>{
     const gi=goalInfo(name);
     const row=document.createElement('div'); row.className='exRow';
@@ -897,6 +930,22 @@ function renderGoals(){
         '<div class="exTarget" style="color:'+(on?'var(--acc)':'var(--amber)')+'">'+
         (on?'On pace ✔ (need ~'+gi.expected+' by today)':'Behind pace by '+(-gi.diff)+' lbs (need ~'+gi.expected+' by today)')+'</div>';
     }
+    box.appendChild(row);
+  });
+  S.customGoals.forEach(g=>{
+    const row=document.createElement('div'); row.className='exRow'; row.style.cursor='pointer';
+    const unitStr=g.unit?' '+g.unit:'';
+    const targetStr=(g.dir==='down'?'≤':'≥')+' '+g.target+unitStr;
+    if(g.current==null){
+      row.innerHTML='<div class="exName">'+g.name+' → '+targetStr+'</div><div class="exTarget">Tap to log your first value</div>';
+    }else{
+      const pct=customGoalPct(g);
+      const hit=pct>=100;
+      row.innerHTML='<div class="exName">'+g.name+' — <b>'+g.current+unitStr+'</b> / '+targetStr+'</div>'+
+        '<div class="barWrap"><div class="bar'+(hit?' full':'')+'" style="width:'+pct+'%"></div></div>'+
+        '<div class="exTarget" style="color:'+(hit?'var(--acc)':'var(--dim)')+'">'+(hit?'Goal hit ✔ · tap to update':'Tap to update')+'</div>';
+    }
+    row.onclick=()=>openUpdateGoalModal(g.id);
     box.appendChild(row);
   });
 }
@@ -1074,6 +1123,75 @@ function populateSettingsForm(){
   document.getElementById('setDeadline').value=S.settings.deadline;
   document.getElementById('setDays').value=S.settings.trainDays;
   document.getElementById('setGoal').value=S.settings.trainGoal;
+  renderCustomGoalsEdit();
+}
+// ----- custom goals -----
+function renderCustomGoalsEdit(){
+  const el=document.getElementById('customGoalsEditList');
+  if(!el) return;
+  if(!S.customGoals.length){ el.innerHTML='<p class="hint">No custom goals yet.</p>'; return; }
+  el.innerHTML=S.customGoals.map(g=>
+    '<div class="goalRow"><span class="hint">'+g.name+' ('+(g.dir==='down'?'≤ ':'≥ ')+g.target+(g.unit?' '+g.unit:'')+')</span>'+
+    '<button class="delBtn" title="Delete goal" onclick="deleteCustomGoal(\''+g.id+'\')">×</button></div>'
+  ).join('');
+}
+function openCustomGoalModal(){
+  document.getElementById('cgName').value='';
+  document.getElementById('cgTarget').value='';
+  document.getElementById('cgUnit').value='';
+  document.getElementById('cgDir').checked=false;
+  document.getElementById('customGoalModal').style.display='flex';
+}
+function closeCustomGoalModal(){ document.getElementById('customGoalModal').style.display='none'; }
+function saveCustomGoal(){
+  const name=document.getElementById('cgName').value.trim();
+  const target=+document.getElementById('cgTarget').value;
+  const unit=document.getElementById('cgUnit').value.trim();
+  const dir=document.getElementById('cgDir').checked?'down':'up';
+  if(!name||!target){ showToast('Enter a name and target value.','err'); return; }
+  S.customGoals.push({id:'g'+Date.now(), name, unit, dir, target, current:null});
+  save();
+  closeCustomGoalModal();
+  renderCustomGoalsEdit();
+  renderGoals();
+  showToast('Goal added.');
+}
+function deleteCustomGoal(id){
+  const g=S.customGoals.find(cg=>cg.id===id);
+  showConfirm('Delete Goal', g?('Delete "'+g.name+'"?'):'Delete this goal?', ()=>{
+    S.customGoals=S.customGoals.filter(cg=>cg.id!==id);
+    save();
+    renderCustomGoalsEdit();
+    renderGoals();
+  }, {okLabel:'Delete', danger:true});
+}
+function customGoalPct(g){
+  if(g.current==null) return null;
+  if(g.dir==='down'){
+    if(g.current<=g.target) return 100;
+    return Math.max(0, Math.min(100, Math.round(g.target/g.current*100)));
+  }
+  return Math.max(0, Math.min(100, Math.round(g.current/g.target*100)));
+}
+let updatingGoalId=null;
+function openUpdateGoalModal(id){
+  const g=S.customGoals.find(cg=>cg.id===id);
+  if(!g) return;
+  updatingGoalId=id;
+  document.getElementById('updateGoalTitle').textContent=g.name;
+  document.getElementById('updateGoalLabel').textContent='Current value'+(g.unit?' ('+g.unit+')':'');
+  document.getElementById('ugValue').value=g.current==null?'':g.current;
+  document.getElementById('updateGoalModal').style.display='flex';
+}
+function closeUpdateGoalModal(){ updatingGoalId=null; document.getElementById('updateGoalModal').style.display='none'; }
+function saveUpdateGoal(){
+  const g=S.customGoals.find(cg=>cg.id===updatingGoalId);
+  if(!g){ closeUpdateGoalModal(); return; }
+  const v=document.getElementById('ugValue').value;
+  g.current=v===''?null:+v;
+  save();
+  closeUpdateGoalModal();
+  renderGoals();
 }
 function goalsNotYetHit(){
   return Object.keys(S.settings.goals).some(name=>{
@@ -1286,6 +1404,7 @@ function setTab(t,btn){
   closeCoach();
   const dir=TABS.indexOf(t)>TABS.indexOf(curTab)?'sL':'sR';
   const same=t===curTab;
+  if(same){ window.scrollTo({top:0, behavior:'smooth'}); }
   curTab=t;
   document.querySelectorAll('.tabc').forEach(e=>e.classList.remove('on','sL','sR'));
   const pane=document.getElementById('tab-'+t);
