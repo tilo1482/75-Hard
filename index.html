@@ -58,34 +58,82 @@
     padding:14px; margin-bottom:12px;}
   .card h2{margin:0 0 10px; font-size:12px; letter-spacing:2px; color:var(--dim);
     text-transform:uppercase; font-weight:700;}
+  /* Home tab — flat grouped layout, no boxed cards */
+  #tab-today .heroStreak{text-align:center; padding:14px 0 26px;}
+  #tab-today .heroLbl{font-size:13px; color:var(--dim); font-weight:600; margin-top:2px;
+    text-transform:uppercase; letter-spacing:1px;}
+  /* streak number — no flame graphic, just an escalating glow */
+  #tab-today .heroNumWrap{position:relative; display:inline-flex; align-items:center;
+    justify-content:center; height:124px; padding:0 18px;}
+  #tab-today .heroNum{position:relative; font-family:'Rajdhani',sans-serif; font-weight:700;
+    font-size:88px; line-height:1.15; letter-spacing:.5px; color:#fffaf0;
+    -webkit-text-stroke:1.5px #fffaf0;
+    filter:drop-shadow(0 6px 8px rgba(0,0,0,.4));
+    animation:numPulse 2.4s ease-in-out infinite;}
+  [data-theme="light"] #tab-today .heroNum{color:#60a5fa; -webkit-text-stroke-color:#60a5fa;
+    filter:drop-shadow(0 6px 8px rgba(59,130,246,.25));}
+  @keyframes numPulse{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(var(--pulseMax,1.03));}
+  }
+  #tab-today .heroNumWrap.tier-spark{--pulseMax:1.02;}
+  #tab-today .heroNumWrap.tier-spark .heroNum{
+    text-shadow:0 0 10px rgba(217,119,6,.5);
+    animation-duration:2.6s;}
+  #tab-today .heroNumWrap.tier-flame{--pulseMax:1.04;}
+  #tab-today .heroNumWrap.tier-flame .heroNum{
+    text-shadow:0 0 9px rgba(249,115,22,.65), 0 0 22px rgba(249,115,22,.35);
+    animation-duration:2.2s;}
+  #tab-today .heroNumWrap.tier-blaze{--pulseMax:1.06;}
+  #tab-today .heroNumWrap.tier-blaze .heroNum{
+    text-shadow:0 0 9px rgba(239,68,68,.7), 0 0 24px rgba(249,115,22,.5), 0 0 44px rgba(239,68,68,.3);
+    animation-duration:1.9s;}
+  #tab-today .heroNumWrap.tier-inferno{--pulseMax:1.09;}
+  #tab-today .heroNumWrap.tier-inferno .heroNum{
+    text-shadow:0 0 9px rgba(253,224,71,.8), 0 0 24px rgba(239,68,68,.55), 0 0 48px rgba(249,115,22,.4), 0 0 72px rgba(253,224,71,.25);
+    animation-duration:1.5s;}
+  #tab-today .heroNumWrap.tier-legendary{--pulseMax:1.13;}
+  #tab-today .heroNumWrap.tier-legendary .heroNum{
+    text-shadow:0 0 10px rgba(255,255,255,.9), 0 0 28px rgba(253,224,71,.6), 0 0 54px rgba(239,68,68,.45), 0 0 88px rgba(255,255,255,.3);
+    animation-duration:1.1s;}
+  #tab-today .homeSection, #tab-lifts .homeSection, #tab-food .homeSection, #tab-settings .homeSection{
+    padding:22px 0; border-top:1px solid var(--line);}
+  #tab-today .homeSection:first-of-type, #tab-lifts .homeSection:first-of-type, #tab-food .homeSection:first-of-type, #tab-settings .homeSection:first-of-type{
+    border-top:none; padding-top:0;}
+  #tab-today .heroStreak + .homeSection{border-top:none; padding-top:0;}
+  #tab-today .homeSection h2, #tab-lifts .homeSection h2, #tab-food .homeSection h2, #tab-settings .homeSection h2{
+    margin:0 0 12px; font-size:12px; letter-spacing:2px; color:var(--dim);
+    text-transform:uppercase; font-weight:700;}
+  #tab-today .homeSection .cardHead, #tab-lifts .homeSection .cardHead, #tab-food .homeSection .cardHead, #tab-settings .homeSection .cardHead{margin-bottom:12px;}
+  #tab-today .homeSection .cardHead h2, #tab-lifts .homeSection .cardHead h2, #tab-food .homeSection .cardHead h2, #tab-settings .homeSection .cardHead h2{margin:0;}
+  /* cardio day picker */
+  .dayPicker{display:flex; gap:6px;}
+  .dayBtn{flex:1; padding:9px 0; font-size:12px; font-weight:700; border-radius:8px;
+    border:1px solid var(--line); background:var(--card2); color:var(--dim); text-align:center;}
+  .dayBtn.active{border-color:var(--acc); color:var(--acc); background:color-mix(in srgb, var(--acc) 15%, transparent);}
+  /* titled sub-sections with a divider, used inside Goals & Targets (view + edit) */
+  .settingsSection{margin-top:18px; padding-top:16px; border-top:1px solid var(--line);}
+  .settingsSection:first-child{margin-top:0; padding-top:0; border-top:none;}
+  .settingsSection h3{margin:0 0 10px; font-size:12px; letter-spacing:2px; color:var(--dim);
+    text-transform:uppercase; font-weight:700;}
+  #tab-today .rule{padding:9px 0;}
   /* checklist */
-  .rule{display:flex; align-items:center; gap:12px; padding:11px 4px;
-    border-bottom:1px solid var(--line); font-size:15px;}
+  .rule{display:flex; align-items:center; gap:10px; padding:9px 4px;
+    border-bottom:1px solid var(--line); font-size:14.5px;}
   .rule:last-child{border-bottom:none;}
-  .rule .box{width:26px; height:26px; min-width:26px; border-radius:8px;
+  .rule .box{width:23px; height:23px; min-width:23px; border-radius:6px;
     border:2px solid var(--line); display:flex; align-items:center;
-    justify-content:center; font-size:15px; color:transparent; transition:.15s;}
+    justify-content:center; font-size:13px; color:transparent; transition:.15s;}
   .rule.done .box{background:var(--acc); border-color:var(--acc); color:var(--onAcc);}
   .rule.done .lbl{color:var(--dim); text-decoration:line-through;}
   .rule.exempt{opacity:.45;}
-  .rule .sub{font-size:12px; color:var(--dim); margin-top:1px;}
+  .rule .sub{font-size:11.5px; color:var(--dim); margin-top:1px;}
   .delBtn{background:none; border:none; color:var(--dim); font-size:20px; line-height:1; padding:4px 6px; flex:none;}
   .delBtn:active{color:var(--txt); background:none;}
   /* water */
   .barWrap{background:var(--card2); border-radius:9px; height:16px; overflow:hidden; margin:8px 0;}
   .bar{height:100%; background:var(--blue); width:0%; transition:.3s; border-radius:9px;}
   .bar.full{background:var(--acc);}
-  /* trend charts */
-  .trendHead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px;}
-  .trendCols{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
-  .trendCol{min-width:0; aspect-ratio:1/1; display:flex; flex-direction:column;}
-  #trendLift, #trendNutrition{flex:1; display:flex; flex-direction:column; min-height:0;}
-  .trendHead select{font-size:11px; padding:3px 6px;}
-  .trendBars{display:flex; align-items:flex-end; gap:4px; height:64px;}
-  .trendBarCol{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%;}
-  .trendBar{width:100%; max-width:16px; background:var(--blue); border-radius:3px 3px 0 0; min-height:2px; transition:.3s;}
-  .trendBar.full{background:var(--acc);}
-  .trendBarLbl{font-size:9px; color:var(--dim); margin-top:4px;}
   .rowBtns{display:flex; gap:8px; flex-wrap:wrap;}
   button{background:var(--card2); color:var(--txt); border:1px solid var(--line);
     border-radius:10px; padding:10px 14px; font-size:14px; font-weight:600;}
@@ -97,9 +145,16 @@
   .tabc.sL{animation:slideInL .32s cubic-bezier(.22,.61,.36,1);}
   .tabc.sR{animation:slideInR .32s cubic-bezier(.22,.61,.36,1);}
   /* coach modal */
-  #coachModal, #mealsModal, #goalsModal, #addTaskModal, #confirmModal, #customGoalModal, #updateGoalModal, #prModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:50;
+  #coachModal, #mealsModal, #goalsModal, #addTaskModal, #confirmModal, #customGoalModal, #updateGoalModal, #liftCoachModal{display:none; position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:50;
     align-items:center; justify-content:center; padding:24px;}
-  #coachModal .card, #mealsModal .card, #goalsModal .card, #addTaskModal .card, #confirmModal .card, #customGoalModal .card, #updateGoalModal .card, #prModal .card{max-width:420px; width:100%; border-color:var(--acc); max-height:80vh; overflow-y:auto;}
+  #mealsModal .card, #goalsModal .card, #addTaskModal .card, #confirmModal .card, #customGoalModal .card, #updateGoalModal .card{max-width:420px; width:100%; border-color:var(--acc); max-height:80vh; overflow-y:auto;}
+  /* nutrition + lift-day coach popups: taller sheet, soft grey border (not the accent), hairline-divided messages */
+  #coachModal .card, #liftCoachModal .card{max-width:420px; width:100%; border-color:var(--line); min-height:58vh; max-height:80vh;
+    overflow:hidden; display:flex; flex-direction:column;}
+  #coachModalBody, #liftCoachModalBody{flex:1; min-height:0; overflow-y:auto;}
+  .coachMsg{padding:12px 0; border-bottom:1px solid var(--line); line-height:1.5;}
+  .coachMsg:first-child{padding-top:0;}
+  .coachMsg:last-child{border-bottom:none;}
   #workoutPickerModal{display:flex; position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:50;
     align-items:center; justify-content:center; padding:24px;
     opacity:0; pointer-events:none; transition:opacity .25s ease;}
@@ -232,35 +287,16 @@
 
 <!-- TODAY -->
 <div class="tabc on" id="tab-today">
-  <div class="card">
-  <div class="cardHead">
-    <h2>Daily Fitness Tracker</h2>
-    <div style="display:flex; align-items:center; gap:10px;">
-      <span id="streakBadge" class="hint" style="font-weight:700; margin:0;"></span>
+  <div class="heroStreak" id="heroStreak"></div>
+  <div class="homeSection">
+    <div class="cardHead">
+      <h2>Daily Fitness Tracker</h2>
       <button class="editBtn" onclick="openAddTaskModal()" title="Add task" style="font-size:16px;">+</button>
     </div>
+    <div id="rules"></div>
   </div>
-  <div id="rules"></div>
-</div>
   <input type="file" id="progCam" accept="image/*" style="display:none" onchange="progPicked(this)">
-  <div class="card">
-    <h2>Checklist — Last 14 Days</h2>
-    <div id="trendChecklist"></div>
-  </div>
-  <div class="trendCols">
-    <div class="card trendCol">
-      <div class="trendHead">
-        <h2 style="margin:0">Lift — 1RM</h2>
-        <select id="trendLiftSelect" onchange="setTrendLift(this.value)"></select>
-      </div>
-      <div id="trendLift"></div>
-    </div>
-    <div class="card trendCol">
-      <h2>Nutrition</h2>
-      <div id="trendNutrition"></div>
-    </div>
-  </div>
-  <div class="card">
+  <div class="homeSection">
     <h2>Body — Weekly Check-in (Sundays)</h2>
     <div id="bodyWeighIn">
       <div class="foodRow" style="grid-template-columns:1fr 74px">
@@ -278,7 +314,7 @@
 
 <!-- SETTINGS -->
 <div class="tabc" id="tab-settings">
-  <div class="card">
+  <div class="homeSection">
     <h2>Appearance</h2>
     <div class="foodRow" style="grid-template-columns:1fr auto; align-items:center;">
       <p class="hint" style="margin:0" id="themeLabel"></p>
@@ -287,66 +323,71 @@
       </button>
     </div>
   </div>
-  <div class="card">
+  <div class="homeSection">
     <div class="cardHead">
       <h2>Goals & Targets</h2>
       <button class="editBtn" onclick="toggleGoalsEdit(true)" title="Edit goals"><svg class="icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
     </div>
     <div id="goalsView"></div>
     <div id="goalsEdit" style="display:none">
-      <div class="setGrid">
-        <div><label class="hint" for="setCal">Calories</label><input id="setCal" type="number" inputmode="numeric"></div>
-        <div><label class="hint" for="setPro">Protein (g)</label><input id="setPro" type="number" inputmode="numeric"></div>
-      </div>
-      <div class="setGrid">
-        <div><label class="hint" for="setFat">Fat cap (g)</label><input id="setFat" type="number" inputmode="numeric"></div>
-        <div><label class="hint" for="setWater">Water goal (oz)</label><input id="setWater" type="number" inputmode="numeric"></div>
-      </div>
-      <p class="hint" style="margin:4px 0 8px">Training split</p>
-      <div class="setGrid">
-        <div><label class="hint" for="setDays">Days / week</label>
-          <select id="setDays">
-            <option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option>
-          </select>
+      <div class="settingsSection">
+        <h3>Nutrition</h3>
+        <div class="setGrid">
+          <div><label class="hint" for="setCal">Calories</label><input id="setCal" type="number" inputmode="numeric"></div>
+          <div><label class="hint" for="setPro">Protein (g)</label><input id="setPro" type="number" inputmode="numeric"></div>
         </div>
-        <div><label class="hint" for="setGoal">Goal</label>
-          <select id="setGoal">
-            <option value="hypertrophy">Build muscle</option>
-            <option value="strength">Build strength</option>
-            <option value="general">General fitness</option>
-            <option value="fatloss">Fat loss</option>
-          </select>
+        <div class="setGrid">
+          <div><label class="hint" for="setFat">Fat cap (g)</label><input id="setFat" type="number" inputmode="numeric"></div>
+          <div><label class="hint" for="setWater">Water goal (oz)</label><input id="setWater" type="number" inputmode="numeric"></div>
         </div>
       </div>
-      <p class="hint" style="margin:4px 0 8px">Lift goals (lbs x reps)</p>
-      <div class="setGrid">
-        <div><label class="hint" for="setBench">Flat Bench</label>
-          <div class="wxr"><input id="setBench" type="number" inputmode="numeric" placeholder="lbs"><span class="hint">x</span><input id="setBenchR" type="number" inputmode="numeric" placeholder="reps"></div>
+      <div class="settingsSection">
+        <h3>Cardio</h3>
+        <div class="dayPicker" id="cardioDayPicker">
+          <button type="button" class="dayBtn" data-day="0" onclick="toggleCardioDayBtn(this)">S</button>
+          <button type="button" class="dayBtn" data-day="1" onclick="toggleCardioDayBtn(this)">M</button>
+          <button type="button" class="dayBtn" data-day="2" onclick="toggleCardioDayBtn(this)">T</button>
+          <button type="button" class="dayBtn" data-day="3" onclick="toggleCardioDayBtn(this)">W</button>
+          <button type="button" class="dayBtn" data-day="4" onclick="toggleCardioDayBtn(this)">T</button>
+          <button type="button" class="dayBtn" data-day="5" onclick="toggleCardioDayBtn(this)">F</button>
+          <button type="button" class="dayBtn" data-day="6" onclick="toggleCardioDayBtn(this)">S</button>
         </div>
-        <div><label class="hint" for="setSquat">Back Squat</label>
-          <div class="wxr"><input id="setSquat" type="number" inputmode="numeric" placeholder="lbs"><span class="hint">x</span><input id="setSquatR" type="number" inputmode="numeric" placeholder="reps"></div>
-        </div>
+        <label class="hint" for="setCardioDur" style="display:block; margin-top:10px;">Duration</label>
+        <input id="setCardioDur" type="text" maxlength="24" placeholder="e.g. 20-30 min">
       </div>
-      <div class="setGrid">
-        <div><label class="hint" for="setDead">Deadlift</label>
-          <div class="wxr"><input id="setDead" type="number" inputmode="numeric" placeholder="lbs"><span class="hint">x</span><input id="setDeadR" type="number" inputmode="numeric" placeholder="reps"></div>
+      <div class="settingsSection">
+        <h3>Lifting Goals</h3>
+        <div class="setGrid">
+          <div><label class="hint" for="setBench">Flat Bench</label>
+            <div class="wxr"><input id="setBench" type="number" inputmode="numeric" placeholder="lbs"><span class="hint">x</span><input id="setBenchR" type="number" inputmode="numeric" placeholder="reps"></div>
+          </div>
+          <div><label class="hint" for="setSquat">Back Squat</label>
+            <div class="wxr"><input id="setSquat" type="number" inputmode="numeric" placeholder="lbs"><span class="hint">x</span><input id="setSquatR" type="number" inputmode="numeric" placeholder="reps"></div>
+          </div>
         </div>
-        <div><label class="hint" for="setPress">Shoulder Press</label>
-          <div class="wxr"><input id="setPress" type="number" inputmode="numeric" placeholder="lbs"><span class="hint">x</span><input id="setPressR" type="number" inputmode="numeric" placeholder="reps"></div>
+        <div class="setGrid">
+          <div><label class="hint" for="setDead">Deadlift</label>
+            <div class="wxr"><input id="setDead" type="number" inputmode="numeric" placeholder="lbs"><span class="hint">x</span><input id="setDeadR" type="number" inputmode="numeric" placeholder="reps"></div>
+          </div>
+          <div><label class="hint" for="setPress">Shoulder Press</label>
+            <div class="wxr"><input id="setPress" type="number" inputmode="numeric" placeholder="lbs"><span class="hint">x</span><input id="setPressR" type="number" inputmode="numeric" placeholder="reps"></div>
+          </div>
         </div>
+        <label class="hint" for="setDeadline">Goal date</label>
+        <input id="setDeadline" type="date">
       </div>
-      <label class="hint" for="setDeadline">Goal date</label>
-      <input id="setDeadline" type="date">
-      <p class="hint" style="margin:14px 0 4px">Custom goals</p>
-      <div id="customGoalsEditList"></div>
-      <button type="button" style="width:100%; margin-top:6px" onclick="openCustomGoalModal()">+ Add Goal</button>
+      <div class="settingsSection">
+        <h3>Custom Goals</h3>
+        <div id="customGoalsEditList"></div>
+        <button type="button" style="width:100%; margin-top:6px" onclick="openCustomGoalModal()">+ Add Goal</button>
+      </div>
       <div class="rowBtns" style="margin-top:10px">
         <button style="flex:1" onclick="cancelGoalsEdit()">Cancel</button>
         <button class="pri" style="flex:1" onclick="saveSettings()">Save Goals</button>
       </div>
     </div>
   </div>
-  <div class="card">
+  <div class="homeSection">
     <h2>Backup</h2>
     <div class="rowBtns">
       <button onclick="exportData()">Export data</button>
@@ -360,25 +401,27 @@
 
 <!-- FOOD -->
 <div class="tabc" id="tab-food">
-  <div class="cardHead">
-    <p class="hint" style="margin:0">Today's targets</p>
-    <button class="editBtn" onclick="openGoalsModal('nutrition')" title="Edit nutrition goals"><svg class="icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Edit</button>
+  <div class="homeSection">
+    <div class="cardHead">
+      <p class="hint" style="margin:0">Today's targets</p>
+      <button class="editBtn" onclick="openGoalsModal('nutrition')" title="Edit nutrition goals"><svg class="icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Edit</button>
+    </div>
+    <div class="ringsRow" id="macroRings">
+      <div class="ringCol">
+        <div class="ringWrap" id="ringCal"></div>
+        <div class="ringLbl">Calories</div>
+      </div>
+      <div class="ringCol">
+        <div class="ringWrap" id="ringPro"></div>
+        <div class="ringLbl">Protein</div>
+      </div>
+      <div class="ringCol">
+        <div class="ringWrap" id="ringFat"></div>
+        <div class="ringLbl">Fat</div>
+      </div>
+    </div>
   </div>
-  <div class="ringsRow" id="macroRings">
-    <div class="ringCol">
-      <div class="ringWrap" id="ringCal"></div>
-      <div class="ringLbl">Calories</div>
-    </div>
-    <div class="ringCol">
-      <div class="ringWrap" id="ringPro"></div>
-      <div class="ringLbl">Protein</div>
-    </div>
-    <div class="ringCol">
-      <div class="ringWrap" id="ringFat"></div>
-      <div class="ringLbl">Fat</div>
-    </div>
-  </div>
-  <div class="card">
+  <div class="homeSection">
     <h2>Water — 1 Gallon</h2>
     <div class="statline"><span class="big" id="waterTxt"></span><span id="waterLeft"></span></div>
     <div class="barWrap"><div class="bar" id="waterBar"></div></div>
@@ -389,7 +432,7 @@
       <button onclick="addWater(-8)">−8</button>
     </div>
   </div>
-  <div class="card">
+  <div class="homeSection">
     <h2 id="logHead">Log Food</h2>
     <div class="foodRow" style="grid-template-columns:1fr 62px 62px 62px">
       <input id="fName" placeholder="Food">
@@ -404,20 +447,20 @@
     <div class="hint" id="estStatus"></div>
     <button class="pri" style="width:100%; margin-top:8px" onclick="openMealsModal()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg> Saved Meals</button>
   </div>
-  <div class="card"><h2>Today's Entries</h2><div id="foodList"></div></div>
-  <div class="card" id="coachCard"><h2>Coach — based on yesterday</h2><div id="coachBox" class="hint"></div></div>
+  <div class="homeSection"><h2>Today's Entries</h2><div id="foodList"></div></div>
+  <div class="homeSection" id="coachCard"><h2>Coach — based on yesterday</h2><div id="coachBox" class="hint"></div></div>
 </div>
 
 <!-- LIFTS -->
 <div class="tabc" id="tab-lifts">
-  <div class="card">
+  <div class="homeSection">
     <div class="cardHead">
       <h2>Lift Goals — target <span id="goalDeadline"></span></h2>
       <button class="editBtn" onclick="openGoalsModal('lifts')" title="Edit lift goals"><svg class="icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>
     </div>
     <div id="goalBox"></div>
   </div>
-  <div class="card">
+  <div class="homeSection">
     <h2>Session</h2>
     <select id="woSel" style="display:none"></select>
     <button type="button" class="woPicker" onclick="openWorkoutPicker()">
@@ -425,8 +468,16 @@
       <svg class="icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
     </button>
   </div>
-  <div class="card"><h2>Exercises</h2><div id="exList"></div>
+  <div class="homeSection"><h2>Exercises</h2><div id="exList"></div>
     <button class="pri" style="width:100%; margin-top:10px" onclick="saveLifts()">Save Session</button>
+  </div>
+  <div class="homeSection">
+    <h2>Progression Notes</h2>
+    <p class="hint" style="font-size:12px; line-height:1.5;">
+      <b>Progression:</b> double progression — hit the top of the rep range on all sets for 2 sessions, then add 5 lb (upper) / 10 lb (lower) and drop back to the bottom of the range.<br>
+      <b>Joints:</b> 5-10 min banded work before Mon / Fri / Thu. Slow 3-sec eccentric every 2 weeks.<br>
+      <b>Deload:</b> half volume every 6-7 weeks.
+    </p>
   </div>
 </div>
 
@@ -435,6 +486,14 @@
     <h2>Coach — based on yesterday</h2>
     <div id="coachModalBody" class="hint" style="font-size:14px"></div>
     <button class="pri" style="width:100%; margin-top:12px" onclick="closeCoach()">Got it</button>
+  </div>
+</div>
+
+<div id="liftCoachModal">
+  <div class="card">
+    <h2 id="liftCoachTitle">Coach</h2>
+    <div id="liftCoachModalBody" class="hint" style="font-size:14px"></div>
+    <button class="pri" style="width:100%; margin-top:12px" onclick="closeLiftCoach()">Got it</button>
   </div>
 </div>
 
@@ -547,18 +606,8 @@
   <div class="card">
     <h2>Select Session</h2>
     <div id="workoutPickerList" class="pickList"></div>
-    <button style="width:100%; margin-top:10px" onclick="closeWorkoutPicker()">Cancel</button>
-  </div>
-</div>
-
-<div id="prModal">
-  <div class="card">
-    <h2>Go For It 💪</h2>
-    <div id="prList"></div>
-    <div class="rowBtns" style="margin-top:14px">
-      <button style="flex:1" onclick="closePRModal()">Not today</button>
-      <button class="pri" style="flex:1" onclick="acceptPR()">Let's go</button>
-    </div>
+    <button class="pri" style="width:100%; margin-top:10px" onclick="confirmWorkoutChoice()">Confirm</button>
+    <button style="width:100%; margin-top:8px" onclick="closeWorkoutPicker()">Cancel</button>
   </div>
 </div>
 
@@ -581,8 +630,9 @@
 <script>
 const KEY='hard75_v1';
 const DEFAULT_SETTINGS={
-  calTarget:3200, proTarget:220, fatCap:100, waterTarget:128, deadline:'2026-12-31',
-  trainDays:6, trainGoal:'hypertrophy', theme:'dark',
+  calTarget:2750, proTarget:220, fatCap:90, waterTarget:128, deadline:'2026-12-31',
+  theme:'dark',
+  cardioDays:[6], cardioDuration:'Run 2-5 mi',
   goals:{'Flat Bench':{w:315,r:1}, 'Back Squat':{w:405,r:1}, 'Deadlift':{w:495,r:1}, 'Shoulder Press':{w:205,r:1}}
 };
 const HEAVY_INC=['Back Squat','Deadlift','Leg Press','RDLs','Hip Thrusts','Walking Lunges','Bulgarians'];
@@ -593,69 +643,46 @@ const BODYWEIGHT_ONLY_EX=['Hanging Knee Raises','Planks','Sit-ups','Twists','Rev
 // exercises commonly done with either a barbell or dumbbells — get a BB/DB toggle next to the title
 const EQ_TOGGLE_EX=['Shoulder Press','Incline Press','Flat Bench','RDLs','Hip Thrusts','Walking Lunges','Bulgarians'];
 const RULES=[
+  {id:'sleep',    lbl:'Sleep', sub:'7+ hours'},
+  {id:'bed',      lbl:'Make your bed', sub:'first thing in the morning'},
+  {id:'self',     lbl:'Self work', sub:'journaling, scripture study, business work, and/or non-fiction reading'},
+  {id:'sunlight', lbl:'Sunlight / outside time', sub:'10+ min outside'},
   {id:'workout',  lbl:'Workout', sub:'45 min — gym or outdoor', ex:'sun'},
-  {id:'cardio',   lbl:'Cardio', sub:'20-30 min'},
+  {id:'cardio',   lbl:'Cardio'},
   {id:'nutrition',lbl:'Nutrition on target', sub:'we\'ll check this off at 8pm if you\'re on track'},
-  {id:'self',     lbl:'Self work', sub:'journaling, scripture study, business work, and/or non-fiction reading'}
+  {id:'water',    lbl:'Water intake', sub:'we\'ll check this off at 8pm if you hit your goal'},
+  {id:'nosweets', lbl:'No sweets', sub:'skip dessert and sugary snacks'},
+  {id:'mobility', lbl:'Mobility / stretching', sub:'5-10 min, separate from your lift'}
 ];
 function allRules(){ return RULES.concat(S.customRules); }
-const SPLIT_6_HYPERTROPHY={
- 'Monday':[['Flat Bench','4x6-8 heavy'],['Incline Dumbbell','3x10-12'],['Cable Chest Fly','3x12 squeeze'],['DB Shoulder Press','3x10'],['Lateral Raise','3x15 strict'],['Tricep Pushdowns','3x12'],['Hanging Knee Raises','3x12-15'],['Twists','3x20']],
- 'Tuesday':[['Lat Pulldowns','4x10 full ROM'],['Seated Cable Rows','3x10-12'],['Barbell Rows','3x10 heavy'],['Face Pulls','3x15'],['Incline DB Curl','3x12'],['Hammer Curl','3x10']],
- 'Wednesday':[['Back Squat','4x6-8 heavy'],['Leg Press','3x10-12 high feet'],['Walking Lunges','3x12/leg'],['Quad Extension','3x15'],['Calf Raises','4x12-15'],['Planks','3xF'],['Sit-ups','3x20']],
- 'Thursday':[['Shoulder Press','4x6-8'],['Incline Press','3x8-10'],['Lateral Raise','4x15 slow'],['Cable Lateral Raise','3x15'],['Dips','3x8'],['Overhead Tricep Ext','3xF']],
- 'Friday':[['Deadlift','4x6'],['Chest Supported Row','3x10'],['Lat Pulldown','3x10 close'],['Rear Delt Flies','3x15'],['Preacher Curl','3x8,F'],['Cable Curls','2x15 single arm'],['Weighted Crunch','3x15'],['Reverse Crunch','3x15']],
- 'Saturday':[['RDLs','4x10 deep'],['Hip Thrusts','4x10'],['Hamstring Curl','3x12'],['Bulgarians','3x10/leg'],['Abductors','3x15'],['Calf Raises','4x15']]
+// fixed personal split -- 5 lifting days (Mon-Fri), cardio/run on Saturday, rest on Sunday
+const WORKOUTS={
+ 'Push + Core':[['Bench Press','4x6-8'],['Overhead Press (DB)','3x8-10'],['Incline DB Press','3x8-12'],['Lateral Raise','3x12-15'],['Triceps Pushdown','3x10-12'],['Hanging Leg Raise / Cable Woodchop','3x12-15 / 12 per side']],
+ 'Pull':[['Deadlift','4x5-6'],['Weighted Pull-up (or assisted)','4x6-10'],['Barbell Row','3x8-10'],['Lat Pulldown','3x10-12'],['Face Pull','3x15'],['Barbell Curl','3x10-12']],
+ 'Legs + Core':[['Squat','4x6-8'],['Romanian Deadlift','3x8-10'],['Leg Press','3x10-12'],['Leg Curl','3x10-12'],['Standing Calf Raise','4x12-15'],['Cable Crunch / Plank','3x12-15 / 45-60 sec']],
+ 'Lower':[['Front Squat or Leg Press (diff. angle)','4x8-10'],['Stiff-Leg Deadlift','3x6-8'],['Walking Lunge','3x10/leg'],['Leg Extension','3x12-15'],['Seated Calf Raise','4x12-15']],
+ 'Upper + Core':[['Incline Barbell Press','4x6-8'],['Chest-Supported Row','4x8-10'],['DB Shoulder Press','3x8-10'],['Rear Delt Fly / Lateral Raise (superset)','3x12-15'],['Curl / Triceps Extension (superset)','3x10-12'],['Ab Wheel or Hanging Raise / Side Plank','3x10-12 / 30-45 sec/side']]
 };
-const GOAL_PROFILES={
-  hypertrophy:{main:'4x8-10 heavy', second:'3x8-10', acc:'3x12-15', finisher:null},
-  strength:   {main:'5x3-5 heavy',  second:'3x5',     acc:'3x8-10',  finisher:null},
-  general:    {main:'3x8-10',       second:'3x10',    acc:'3x12',    finisher:'1x10-15min easy cardio or mobility'},
-  fatloss:    {main:'3x10-12',      second:'3x12',    acc:'3x15',    finisher:'1x10-15min intervals or circuit'}
+// which logged exercises feed each of the 4 tracked "Lift Goals" 1RM targets --
+// the split's exercise names don't always match the goal name exactly (e.g. "Bench Press"
+// vs the "Flat Bench" goal), and Shoulder Press is trained on two different days
+const GOAL_SOURCE_EXERCISES={
+  'Flat Bench':['Bench Press'],
+  'Back Squat':['Squat'],
+  'Deadlift':['Deadlift'],
+  'Shoulder Press':['Overhead Press (DB)','DB Shoulder Press']
 };
-const DAY_TEMPLATES={
-  2:[
-    {label:'Full Body A', slots:[{n:'Back Squat',t:'main'},{n:'Flat Bench',t:'second'},{n:'Seated Cable Rows',t:'acc'},{n:'Lateral Raise',t:'acc'},{n:'Planks',t:'acc'}]},
-    {label:'Full Body B', slots:[{n:'Deadlift',t:'main'},{n:'Shoulder Press',t:'second'},{n:'Lat Pulldowns',t:'acc'},{n:'Walking Lunges',t:'acc'},{n:'Hanging Knee Raises',t:'acc'}]}
-  ],
-  3:[
-    {label:'Full Body A', slots:[{n:'Back Squat',t:'main'},{n:'Flat Bench',t:'second'},{n:'Seated Cable Rows',t:'acc'},{n:'Lateral Raise',t:'acc'}]},
-    {label:'Full Body B', slots:[{n:'Deadlift',t:'main'},{n:'Shoulder Press',t:'second'},{n:'Lat Pulldowns',t:'acc'},{n:'Walking Lunges',t:'acc'}]},
-    {label:'Full Body C', slots:[{n:'Flat Bench',t:'main'},{n:'Back Squat',t:'second'},{n:'Barbell Rows',t:'acc'},{n:'Planks',t:'acc'}]}
-  ],
-  4:[
-    {label:'Upper A', slots:[{n:'Flat Bench',t:'main'},{n:'Barbell Rows',t:'second'},{n:'Shoulder Press',t:'acc'},{n:'Lat Pulldowns',t:'acc'},{n:'Incline DB Curl',t:'acc'},{n:'Tricep Pushdowns',t:'acc'}]},
-    {label:'Lower A', slots:[{n:'Back Squat',t:'main'},{n:'RDLs',t:'second'},{n:'Walking Lunges',t:'acc'},{n:'Calf Raises',t:'acc'}]},
-    {label:'Upper B', slots:[{n:'Shoulder Press',t:'main'},{n:'Lat Pulldowns',t:'second'},{n:'Flat Bench',t:'acc'},{n:'Seated Cable Rows',t:'acc'},{n:'Hammer Curl',t:'acc'},{n:'Overhead Tricep Ext',t:'acc'}]},
-    {label:'Lower B', slots:[{n:'Deadlift',t:'main'},{n:'Leg Press',t:'second'},{n:'Bulgarians',t:'acc'},{n:'Calf Raises',t:'acc'}]}
-  ],
-  5:[
-    {label:'Push',  slots:[{n:'Flat Bench',t:'main'},{n:'Shoulder Press',t:'second'},{n:'Lateral Raise',t:'acc'},{n:'Tricep Pushdowns',t:'acc'}]},
-    {label:'Pull',  slots:[{n:'Deadlift',t:'main'},{n:'Barbell Rows',t:'second'},{n:'Lat Pulldowns',t:'acc'},{n:'Incline DB Curl',t:'acc'}]},
-    {label:'Legs',  slots:[{n:'Back Squat',t:'main'},{n:'RDLs',t:'second'},{n:'Walking Lunges',t:'acc'},{n:'Calf Raises',t:'acc'}]},
-    {label:'Upper', slots:[{n:'Shoulder Press',t:'main'},{n:'Seated Cable Rows',t:'second'},{n:'Flat Bench',t:'acc'},{n:'Hammer Curl',t:'acc'}]},
-    {label:'Lower', slots:[{n:'Back Squat',t:'main'},{n:'Hip Thrusts',t:'second'},{n:'Bulgarians',t:'acc'},{n:'Calf Raises',t:'acc'}]}
-  ],
-  6:[
-    {label:'Push A', slots:[{n:'Flat Bench',t:'main'},{n:'Shoulder Press',t:'second'},{n:'Lateral Raise',t:'acc'},{n:'Tricep Pushdowns',t:'acc'}]},
-    {label:'Pull A', slots:[{n:'Lat Pulldowns',t:'main'},{n:'Barbell Rows',t:'second'},{n:'Incline DB Curl',t:'acc'},{n:'Hammer Curl',t:'acc'}]},
-    {label:'Legs A', slots:[{n:'Back Squat',t:'main'},{n:'Leg Press',t:'second'},{n:'Walking Lunges',t:'acc'},{n:'Calf Raises',t:'acc'}]},
-    {label:'Push B', slots:[{n:'Shoulder Press',t:'main'},{n:'Flat Bench',t:'second'},{n:'Cable Lateral Raise',t:'acc'},{n:'Overhead Tricep Ext',t:'acc'}]},
-    {label:'Pull B', slots:[{n:'Deadlift',t:'main'},{n:'Chest Supported Row',t:'second'},{n:'Rear Delt Flies',t:'acc'},{n:'Cable Curls',t:'acc'}]},
-    {label:'Legs B', slots:[{n:'RDLs',t:'main'},{n:'Hip Thrusts',t:'second'},{n:'Bulgarians',t:'acc'},{n:'Calf Raises',t:'acc'}]}
-  ]
-};
-function generateSplit(days,goal){
-  if(days===6&&goal==='hypertrophy') return SPLIT_6_HYPERTROPHY;
-  const template=DAY_TEMPLATES[days]||DAY_TEMPLATES[6];
-  const profile=GOAL_PROFILES[goal]||GOAL_PROFILES.hypertrophy;
-  const out={};
-  template.forEach(day=>{
-    const exs=day.slots.map(s=>[s.n, profile[s.t]||profile.acc]);
-    if(profile.finisher) exs.push(['Conditioning Finisher', profile.finisher]);
-    out[day.label]=exs;
-  });
-  return out;
+const EXERCISE_TO_GOAL={};
+Object.keys(GOAL_SOURCE_EXERCISES).forEach(goalName=>{
+  GOAL_SOURCE_EXERCISES[goalName].forEach(ex=>{ EXERCISE_TO_GOAL[ex]=goalName; });
+});
+// merged, date-sorted logging history across every exercise that feeds a given goal
+function combinedHistory(goalName){
+  const exs=GOAL_SOURCE_EXERCISES[goalName]||[goalName];
+  let hist=[];
+  exs.forEach(ex=>{ hist=hist.concat(S.ex[ex]||[]); });
+  hist.sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);
+  return hist;
 }
 
 let S=load();
@@ -689,22 +716,33 @@ function toggleTheme(){
   applyTheme();
 }
 setInterval(()=>{ if(S.settings.theme==='auto') applyTheme(); }, 60000);
-let WORKOUTS=generateSplit(S.settings.trainDays, S.settings.trainGoal);
-function regenerateSplit(){
-  WORKOUTS=generateSplit(S.settings.trainDays, S.settings.trainGoal);
-  const sel=document.getElementById('woSel');
-  if(sel) sel.innerHTML='';
-  renderLifts(); renderGoals();
-}
 function load(){
   let s=null;
   try{s=JSON.parse(localStorage.getItem(KEY));}catch(e){}
   if(!s) s={days:{}, ex:{}};
-  s.meals=s.meals||[]; s.drafts=s.drafts||{}; s.body=s.body||[]; s.customRules=s.customRules||[]; s.customGoals=s.customGoals||[]; s.prSeen=s.prSeen||{};
-  s.trendLift=s.trendLift||null;
+  s.meals=s.meals||[]; s.drafts=s.drafts||{}; s.body=s.body||[]; s.customRules=s.customRules||[]; s.customGoals=s.customGoals||[];
+  if(s.lastDeload===undefined) s.lastDeload=todayS(); // starts the 6-7 week deload clock cleanly
+  // migrate: cardio used to be a plain sessions/week count auto-distributed across the week --
+  // now the user picks specific weekdays directly, so convert the old count into a day set once
+  if(s.settings && s.settings.cardioFreq!==undefined && s.settings.cardioDays===undefined){
+    s.settings.cardioDays=[...cardioActiveDays(s.settings.cardioFreq)];
+    delete s.settings.cardioFreq;
+  }
   const defGoals={...DEFAULT_SETTINGS.goals};
   s.settings=Object.assign({}, DEFAULT_SETTINGS, s.settings||{});
   s.settings.goals=Object.assign(defGoals, s.settings.goals||{});
+  // one-time forced migration: switch off the old customizable multi-goal/multi-day
+  // system onto the fixed personal split + macros -- overwrites previously saved
+  // values once, since DEFAULT_SETTINGS alone only fills in missing keys
+  if(!s.migratedToPersonalSplitV1){
+    s.migratedToPersonalSplitV1=true;
+    s.settings.calTarget=2750;
+    s.settings.fatCap=90;
+    s.settings.cardioDays=[6];
+    s.settings.cardioDuration='Run 2-5 mi';
+    delete s.settings.trainDays;
+    delete s.settings.trainGoal;
+  }
   // migrate: lift goals used to be a plain lb number (implied 1RM) — now {w:lbs, r:reps}
   Object.keys(s.settings.goals).forEach(k=>{
     if(typeof s.settings.goals[k]==='number') s.settings.goals[k]={w:s.settings.goals[k], r:1};
@@ -724,8 +762,31 @@ function todayS(){return d2s(new Date());}
 function isSun(ds){return s2d(ds).getDay()===0;}
 function day(ds){ if(!S.days[ds]) S.days[ds]={checks:{},water:0,food:[],lifts:null}; return S.days[ds]; }
 
+// which weekday indices (0=Sun..6=Sat) count as a "cardio day" for a given weekly frequency,
+// spread as evenly as possible across the week
+// legacy helper -- only used to migrate an old sessions/week count into specific weekdays
+// the first time an existing save file is loaded (see load())
+function cardioActiveDays(freq){
+  const n=Math.max(0, Math.min(7, Math.round(freq)||0));
+  if(n<=0) return new Set();
+  if(n>=7) return new Set([0,1,2,3,4,5,6]);
+  const days=new Set();
+  for(let i=0;i<n;i++) days.add(Math.round(i*7/n)%7);
+  return days;
+}
+function isCardioDay(ds){
+  return (S.settings.cardioDays||[]).includes(s2d(ds).getDay());
+}
+// shared exemption check used by the checklist, progress %, and streak logic --
+// a rule is exempt (greyed out, doesn't block completion) on days it isn't scheduled
+function isRuleExempt(r, ds){
+  if(r.ex==='sun') return isSun(ds);
+  if(r.id==='cardio') return !isCardioDay(ds);
+  return false;
+}
+
 function checklistProgress(d,t){
-  const active=allRules().filter(r=>!(r.ex==='sun'&&isSun(t)));
+  const active=allRules().filter(r=>!isRuleExempt(r,t));
   let done=0;
   active.forEach(r=>{
     if(d.checks[r.id]){ done+=1; return; }
@@ -749,7 +810,7 @@ function header(){
   const full=p.total>0&&p.done===p.total;
   fill.style.clipPath='inset(0 '+(100-pct)+'% 0 0)';
   fill.classList.toggle('full',full);
-  sub.textContent=isSun(t)?('Rest day — recover well'+(S.settings.trainGoal==='fatloss'?' & weigh-in day':'')):'';
+  sub.textContent=isSun(t)?'Rest day — recover well':'';
 }
 
 function nutritionOnTrack(d){
@@ -763,17 +824,27 @@ function maybeAutoCheckNutrition(d){
   if(!d.checks.nutrition && nutritionOnTrack(d)) d.checks.nutrition=true;
   save();
 }
+function maybeAutoCheckWater(d){
+  if(new Date().getHours()<20) return;
+  if(d.autoWaterChecked) return;
+  d.autoWaterChecked=true;
+  if(!d.checks.water && (d.water||0)>=S.settings.waterTarget) d.checks.water=true;
+  save();
+}
 function renderRules(){
   const t=todayS(), d=day(t), el=document.getElementById('rules');
   maybeAutoCheckNutrition(d);
+  maybeAutoCheckWater(d);
   el.innerHTML='';
   allRules().forEach(r=>{
-    const ex=r.ex==='sun'&&isSun(t);
+    const ex=isRuleExempt(r,t);
     const isCustom=S.customRules.some(cr=>cr.id===r.id);
     const row=document.createElement('div');
     row.className='rule'+(d.checks[r.id]?' done':'')+(ex?' exempt':'');
     let sub=r.sub;
     if(r.id==='nutrition'){const f=totals(d); sub=f.c+' cal · '+f.p+'g pro · '+f.f+'g fat logged so far';}
+    if(r.id==='cardio'){ sub=(S.settings.cardioDays||[]).length?S.settings.cardioDuration:'Pick your cardio days in Settings'; }
+    if(r.id==='water'){ sub=(d.water||0)+' / '+S.settings.waterTarget+' oz logged so far'; }
     row.innerHTML='<div class="box">✓</div><div style="flex:1; min-width:0;"><div class="lbl">'+r.lbl+(ex?' — exempt':'')+'</div><div class="sub">'+sub+'</div></div>'+
       (isCustom?'<button class="delBtn" title="Delete task" onclick="event.stopPropagation(); deleteCustomTask(\''+r.id+'\')">×</button>':'');
     if(!ex) row.addEventListener('click',()=>{
@@ -786,7 +857,7 @@ function renderRules(){
 function totals(d){let c=0,p=0,f=0; d.food.forEach(e=>{c+=e.c; p+=e.p; f+=(e.f||0);}); return {c,p,f};}
 
 function isDayComplete(ds){
-  const rules=allRules().filter(r=>!(r.ex==='sun'&&isSun(ds)));
+  const rules=allRules().filter(r=>!isRuleExempt(r,ds));
   if(!rules.length) return false;
   const checks=(S.days[ds]&&S.days[ds].checks)||{};
   return rules.every(r=>checks[r.id]);
@@ -799,26 +870,41 @@ function currentStreak(){
   while(isDayComplete(d2s(cursor))){ n++; cursor.setDate(cursor.getDate()-1); }
   return n;
 }
+const GLOW_TIERS=[
+  {min:1,  max:6,        cls:'tier-spark'},
+  {min:7,  max:24,       cls:'tier-flame'},
+  {min:25, max:49,       cls:'tier-blaze'},
+  {min:50, max:74,       cls:'tier-inferno'},
+  {min:75, max:Infinity, cls:'tier-legendary'}
+];
+function glowTierFor(n){
+  return GLOW_TIERS.find(t=>n>=t.min&&n<=t.max) || GLOW_TIERS[GLOW_TIERS.length-1];
+}
 function renderStreak(){
-  const el=document.getElementById('streakBadge');
+  const el=document.getElementById('heroStreak');
   if(!el) return;
   const n=currentStreak();
-  el.textContent = n>0 ? '🔥 '+n+(n===1?' day':' days') : 'Start your streak today';
+  if(n<=0){
+    el.innerHTML='<div class="heroLbl">Start your streak today</div>';
+    return;
+  }
+  const tier=glowTierFor(n);
+  el.innerHTML='<div class="heroNumWrap '+tier.cls+'"><div class="heroNum">'+n+'</div></div><div class="heroLbl">day streak</div>';
 }
 
 function coach(){
   const t=s2d(todayS()); t.setDate(t.getDate()-1);
   const yds=d2s(t), y=S.days[yds];
   const box=document.getElementById('coachBox');
-  if(!y||!y.food.length){box.textContent='No food logged yesterday — nothing to adjust from. Log everything today.'; return;}
+  if(!y||!y.food.length){box.innerHTML='<div class="coachMsg">No food logged yesterday — nothing to adjust from. Log everything today.</div>'; return;}
   const CAL_T=S.settings.calTarget, PRO_T=S.settings.proTarget, FAT_T=S.settings.fatCap;
   const f=totals(y), msgs=[];
-  if(f.c>CAL_T+200) msgs.push('⚠ Calories ran '+(f.c-CAL_T)+' over. Target ~'+(CAL_T-200)+' today — cut oils, nut butter, and the densest carb portion first. Keep protein.');
-  if(f.c<CAL_T-300) msgs.push('⚠ '+(CAL_T-f.c)+' cal short yesterday. Underfueling kills lifts — add rice, oats, or a shake with milk today.');
-  if(f.p<PRO_T) msgs.push('⚠ Protein was '+(PRO_T-f.p)+'g short. Front-load today: shake + Greek yogurt before noon, don’t leave it all for dinner.');
-  if(f.f>FAT_T) msgs.push('⚠ Fat hit '+f.f+'g (cap '+FAT_T+'). Lean day today: chicken breast, egg whites, white fish, shrimp, 0% Greek yogurt. Nothing cooked in oil — grill, bake, or air-fry.');
-  if(!msgs.length) msgs.push('✔ Yesterday was on target ('+f.c+' cal / '+f.p+'g pro / '+f.f+'g fat). Run it back.');
-  box.innerHTML=msgs.join('<br><br>');
+  if(f.c>CAL_T+200) msgs.push('Calories ran '+(f.c-CAL_T)+' over. Target ~'+(CAL_T-200)+' today — cut oils, nut butter, and the densest carb portion first. Keep protein.');
+  if(f.c<CAL_T-300) msgs.push((CAL_T-f.c)+' cal short yesterday. Underfueling kills lifts — add rice, oats, or a shake with milk today.');
+  if(f.p<PRO_T) msgs.push('Protein was '+(PRO_T-f.p)+'g short. Front-load today: shake + Greek yogurt before noon, don’t leave it all for dinner.');
+  if(f.f>FAT_T) msgs.push('Fat hit '+f.f+'g (cap '+FAT_T+'). Lean day today: chicken breast, egg whites, white fish, shrimp, 0% Greek yogurt. Nothing cooked in oil — grill, bake, or air-fry.');
+  if(!msgs.length) msgs.push('Yesterday was on target ('+f.c+' cal / '+f.p+'g pro / '+f.f+'g fat). Run it back.');
+  box.innerHTML=msgs.map(m=>'<div class="coachMsg">'+m+'</div>').join('');
 }
 
 function renderWater(){
@@ -1099,10 +1185,80 @@ function estAtReps(sets,reps){
   const e=bestE1(sets);
   return reps<=1?e:Math.round(e/(1+reps/30));
 }
+// ----- lift-day coach popup (shown after confirming a session) -----
+const JOINT_DAY_SESSIONS=['Push + Core','Lower','Upper + Core'];
+const DELOAD_INTERVAL_DAYS=42; // 6 of the "6-7 weeks" window in the Progression Notes
+function isDeloadDue(){
+  return (s2d(todayS())-s2d(S.lastDeload))/86400000>=DELOAD_INTERVAL_DAYS;
+}
+function deloadWeightLines(wo){
+  return (WORKOUTS[wo]||[]).map(([name])=>{
+    const hist=S.ex[name]||[];
+    if(!hist.length) return null;
+    const sets=parseSets(hist[hist.length-1].v);
+    if(!sets.length) return null;
+    const topW=Math.max(...sets.map(s=>s.w));
+    return name+': '+roundTo5(topW*0.6)+' lb (60% of your last top set)';
+  }).filter(Boolean);
+}
+// PR-ready lifts for a session: main goal lifts only, not already drafted today,
+// gated off entirely on deload weeks (a PR push would contradict cutting volume)
+function prReadyForSession(wo){
+  return (WORKOUTS[wo]||[]).filter(([name])=>{
+    if(!EXERCISE_TO_GOAL[name]) return false; // only the 4 tracked goal lifts (by alias)
+    const drv=S.drafts[wo]&&S.drafts[wo].v[name];
+    const alreadyLogged=Array.isArray(drv)&&drv.some(s=>s.w&&s.r);
+    return !alreadyLogged;
+  }).map(([name,target])=>({name, pr:prCheck(name,target)})).filter(x=>x.pr);
+}
+function buildLiftCoach(wo){
+  const msgs=[];
+  if(JOINT_DAY_SESSIONS.includes(wo)) msgs.push('Joint day — 5-10 min banded work before this session.');
+  const deloadDue=isDeloadDue();
+  if(deloadDue){
+    const lines=deloadWeightLines(wo);
+    msgs.push('Deload time — you\'re 6+ weeks into this cycle. Cut volume in half today.'+(lines.length?'<br>'+lines.join('<br>'):''));
+  }else{
+    prReadyForSession(wo).forEach(({name,pr})=>{
+      msgs.push('You hit every top set on <b>'+name+'</b> last time — looks like a safe day to chase a PR.<br>'+
+        '<button class="pri" style="margin-top:8px; width:100%" onclick="applyPR(\''+wo.replace(/'/g,"\\'")+'\',\''+name.replace(/'/g,"\\'")+'\')">Load PR sets — top set '+pr.prWeight+' lb</button>');
+    });
+  }
+  const perfLines=(WORKOUTS[wo]||[]).map(([name,target])=>{
+    const rec=recommend(name,target);
+    return rec?('<b>'+name+'</b> '+rec):null;
+  }).filter(Boolean);
+  if(perfLines.length) msgs.push(perfLines.join('<br>'));
+  msgs.push('Progression: hit the top of your rep range on all sets for 2 sessions, then add 5 lb (upper) / 10 lb (lower) and drop back to the bottom of the range.');
+  if(deloadDue){ S.lastDeload=todayS(); save(); }
+  return msgs.map(m=>'<div class="coachMsg">'+m+'</div>').join('');
+}
+function openLiftCoach(wo){
+  document.getElementById('liftCoachTitle').textContent=wo+' — Coach';
+  document.getElementById('liftCoachModalBody').innerHTML=buildLiftCoach(wo);
+  document.getElementById('liftCoachModal').style.display='flex';
+}
+function closeLiftCoach(){
+  document.getElementById('liftCoachModal').style.display='none';
+}
+function applyPR(wo,name){
+  const ex=(WORKOUTS[wo]||[]).find(e=>e[0]===name);
+  const pr=ex&&prCheck(name, ex[1]);
+  if(!pr) return;
+  if(!S.drafts[wo]) S.drafts[wo]={d:todayS(), v:{}};
+  S.drafts[wo].v[name]=pr.sets.map(s=>({w:String(s.w), r:String(s.r)}));
+  S.drafts[wo].d=todayS();
+  save();
+  closeLiftCoach();
+  renderLifts();
+  const el=document.querySelector('[data-ex="'+name+'"]');
+  if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+  showToast('PR sets loaded for '+name+' — let\'s get it.');
+}
 function goalInfo(name){
   const g=S.settings.goals[name]; if(g==null) return null;
   const t=g.w, reps=g.r||1;
-  const hist=S.ex[name]||[];
+  const hist=combinedHistory(name);
   let base=null, baseDate=null;
   if(hist.length){ base=estAtReps(parseSets(hist[0].v),reps); baseDate=hist[0].d; }
   const cur=hist.length?estAtReps(parseSets(hist[hist.length-1].v),reps):null;
@@ -1275,20 +1431,30 @@ function syncWoPickerLabel(){
   const lbl=document.getElementById('woSelLabel');
   if(sel&&lbl) lbl.textContent=sel.value||'Select session';
 }
-function openWorkoutPicker(){
-  const cur=document.getElementById('woSel').value;
+let pendingWorkoutChoice=null;
+function renderWorkoutPickerList(){
   const list=document.getElementById('workoutPickerList');
   list.innerHTML=Object.keys(WORKOUTS).map(name=>
-    '<div class="pickRow'+(name===cur?' sel':'')+'" onclick="chooseWorkout(\''+name.replace(/'/g,"\\'")+'\')">'+name+(name===cur?' ✓':'')+'</div>'
+    '<div class="pickRow'+(name===pendingWorkoutChoice?' sel':'')+'" onclick="selectWorkoutRow(\''+name.replace(/'/g,"\\'")+'\')">'+name+(name===pendingWorkoutChoice?' ✓':'')+'</div>'
   ).join('');
+}
+function openWorkoutPicker(){
+  pendingWorkoutChoice=document.getElementById('woSel').value||null;
+  renderWorkoutPickerList();
   document.getElementById('workoutPickerModal').classList.add('show');
 }
+function selectWorkoutRow(name){
+  pendingWorkoutChoice=name;
+  renderWorkoutPickerList();
+}
 function closeWorkoutPicker(){ document.getElementById('workoutPickerModal').classList.remove('show'); }
-function chooseWorkout(name){
+function confirmWorkoutChoice(){
+  if(!pendingWorkoutChoice){ closeWorkoutPicker(); return; }
+  const name=pendingWorkoutChoice;
   document.getElementById('woSel').value=name;
   closeWorkoutPicker();
   renderLifts(); renderGoals();
-  maybeSuggestPR(name);
+  openLiftCoach(name);
 }
 // ----- PR suggestion -----
 function roundTo5(n){ return Math.round(n/5)*5; }
@@ -1311,55 +1477,6 @@ function prCheck(name,target){
     prWeight,
     sets:[{w:w1,r:5},{w:w2,r:3},{w:prWeight,r:1}]
   };
-}
-let prQueue=[];
-function maybeSuggestPR(wo){
-  const key=todayS()+'|'+wo;
-  if(S.prSeen[key]) return;
-  S.prSeen[key]=true; save();
-  const exs=WORKOUTS[wo]||[];
-  prQueue=[];
-  exs.forEach(([name,target])=>{
-    if(!S.settings.goals[name]) return; // only the 4 main goal lifts
-    const drv=S.drafts[wo]&&S.drafts[wo].v[name];
-    const alreadyLogged=Array.isArray(drv)&&drv.some(s=>s.w&&s.r);
-    if(alreadyLogged) return;
-    const pr=prCheck(name,target);
-    if(pr) prQueue.push({wo, name, sets:pr.sets});
-  });
-  showNextPR();
-}
-let prCurrent=null;
-function showNextPR(){
-  if(!prQueue.length){ prCurrent=null; return; }
-  prCurrent=prQueue.shift();
-  document.getElementById('prList').innerHTML=
-    '<div class="exRow"><div class="exTarget">Hey! You crushed every rep on your last <b>'+prCurrent.name+'</b> session. Looks like you\'re ready for a PR — wanna go for it?</div></div>';
-  document.getElementById('prModal').style.display='flex';
-}
-function closePRModal(){
-  document.getElementById('prModal').style.display='none';
-  prCurrent=null;
-  setTimeout(showNextPR, 200);
-}
-function acceptPR(){
-  if(prCurrent){
-    const {wo,name,sets}=prCurrent;
-    if(!S.drafts[wo]) S.drafts[wo]={d:todayS(), v:{}};
-    S.drafts[wo].v[name]=sets.map(s=>({w:String(s.w), r:String(s.r)}));
-    S.drafts[wo].d=todayS();
-    save();
-  }
-  document.getElementById('prModal').style.display='none';
-  const goName=prCurrent&&prCurrent.name;
-  prCurrent=null;
-  renderLifts();
-  if(goName){
-    const el=document.querySelector('[data-ex="'+goName+'"]');
-    if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
-  }
-  showToast("Let's get it 💪");
-  setTimeout(showNextPR, 300);
 }
 function serializeRows(rows){
   if(!Array.isArray(rows)) return (rows||'').trim();
@@ -1418,85 +1535,12 @@ function sline(pts,color,W,H){
 }
 function renderBody(){
   const section=document.getElementById('bodyWeighIn');
-  if(section) section.style.display=S.settings.trainGoal==='fatloss'?'block':'none';
+  if(section) section.style.display='block';
   const el=document.getElementById('bodyChart');
   const ws=S.body.filter(b=>b.w).map(b=>({x:b.d,y:b.w}));
   if(!ws.length){el.innerHTML='<p class="hint">Log your weight each Sunday and watch your trend build here.</p>';return;}
   el.innerHTML='<div class="hint" style="margin-top:8px">Weight: '+ws[0].y+' → <b style="color:var(--acc)">'+ws[ws.length-1].y+' lb</b></div>'+
     '<svg width="100%" height="60" viewBox="0 0 300 60" preserveAspectRatio="none" style="color:var(--acc)">'+sline(ws,'currentColor',300,60)+'</svg>';
-}
-// ----- trend charts (checklist %, lift est. 1RM, nutrition calories) -----
-function renderChecklistTrend(){
-  const el=document.getElementById('trendChecklist');
-  if(!el) return;
-  const t=s2d(todayS()), days=[];
-  for(let i=13;i>=0;i--){
-    const d=new Date(t); d.setDate(d.getDate()-i);
-    const ds=d2s(d);
-    const rules=allRules().filter(r=>!(r.ex==='sun'&&isSun(ds)));
-    const checks=(S.days[ds]&&S.days[ds].checks)||{};
-    const done=rules.filter(r=>checks[r.id]).length;
-    const pct=rules.length?Math.round(done/rules.length*100):0;
-    days.push({ds,pct,lbl:['S','M','T','W','T','F','S'][d.getDay()]});
-  }
-  el.innerHTML='<div class="trendBars">'+days.map(x=>
-    '<div class="trendBarCol" title="'+x.ds+': '+x.pct+'%"><div class="trendBar'+(x.pct>=100?' full':'')+'" style="height:'+x.pct+'%"></div><div class="trendBarLbl">'+x.lbl+'</div></div>'
-  ).join('')+'</div>';
-}
-function trendLiftNames(){
-  return Object.keys(S.ex).filter(n=>(S.ex[n]||[]).some(h=>parseSets(h.v).length)).sort();
-}
-function populateTrendLiftSelect(){
-  const sel=document.getElementById('trendLiftSelect');
-  if(!sel) return;
-  const names=trendLiftNames();
-  if(!names.length){ sel.innerHTML='<option value="">No lifts logged yet</option>'; sel.disabled=true; return; }
-  sel.disabled=false;
-  if(!S.trendLift||!names.includes(S.trendLift)) S.trendLift=names[0];
-  sel.innerHTML=names.map(n=>'<option value="'+n+'"'+(n===S.trendLift?' selected':'')+'>'+n+'</option>').join('');
-}
-function setTrendLift(name){ S.trendLift=name; save(); renderLiftTrend(); }
-function renderLiftTrend(){
-  const el=document.getElementById('trendLift');
-  if(!el) return;
-  populateTrendLiftSelect();
-  const name=S.trendLift;
-  const hist=name?(S.ex[name]||[]):[];
-  const pts=hist.map(h=>({x:h.d, y:bestE1(parseSets(h.v))})).filter(p=>p.y>0);
-  if(!pts.length){ el.innerHTML='<p class="hint">Log a few sessions for this lift to see a trend.</p>'; return; }
-  el.innerHTML='<div class="hint" style="margin-top:2px">Est. 1RM: '+pts[0].y+' → <b style="color:var(--acc)">'+pts[pts.length-1].y+' lb</b></div>'+
-    '<svg width="100%" height="100%" viewBox="0 0 300 60" preserveAspectRatio="none" style="color:var(--acc); flex:1; min-height:0;">'+sline(pts,'currentColor',300,60)+'</svg>';
-}
-function nutritionChart(pts,target,W,H){
-  const ys=pts.map(p=>p.y).concat([target]);
-  const mn=Math.min(...ys), mx=Math.max(...ys), span=(mx-mn)||1;
-  const px=i=>10+(W-20)*(pts.length===1?0.5:i/(pts.length-1));
-  const py=v=>H-8-(H-16)*((v-mn)/span);
-  const ty=py(target);
-  return '<line x1="10" y1="'+ty+'" x2="'+(W-10)+'" y2="'+ty+'" stroke="currentColor" stroke-width="0.5" stroke-dasharray="4 3" opacity=".35"/>'+
-    '<polyline fill="none" stroke="currentColor" stroke-width="1" points="'+pts.map((p,i)=>px(i)+','+py(p.y)).join(' ')+'"/>'+
-    pts.map((p,i)=>'<circle cx="'+px(i)+'" cy="'+py(p.y)+'" r="2" fill="currentColor"/>').join('');
-}
-function renderNutritionTrend(){
-  const el=document.getElementById('trendNutrition');
-  if(!el) return;
-  const CAL_T=S.settings.calTarget, PRO_T=S.settings.proTarget, FAT_T=S.settings.fatCap;
-  const t=s2d(todayS()), pts=[];
-  for(let i=6;i>=0;i--){
-    const d=new Date(t); d.setDate(d.getDate()-i);
-    const ds=d2s(d), dd=S.days[ds];
-    let score=0;
-    if(dd&&dd.food&&dd.food.length){
-      const f=totals(dd);
-      const calPct=CAL_T?Math.min(100,f.c/CAL_T*100):0;
-      const proPct=PRO_T?Math.min(100,f.p/PRO_T*100):0;
-      const fatPct=FAT_T?Math.min(100,f.f/FAT_T*100):0;
-      score=Math.round((calPct+proPct+fatPct)/3);
-    }
-    pts.push({x:ds, y:score});
-  }
-  el.innerHTML='<div class="hint" style="margin-top:2px">Nutrition score: '+pts[0].y+'% → <b style="color:var(--acc)">'+pts[pts.length-1].y+'%</b> of daily goal</div>'+
-    '<svg width="100%" height="100%" viewBox="0 0 300 60" preserveAspectRatio="none" style="color:var(--acc); flex:1; min-height:0;">'+nutritionChart(pts,100,300,60)+'</svg>';
 }
 function backupNudge(){
   const el=document.getElementById('bkNudge');
@@ -1559,9 +1603,19 @@ function populateSettingsForm(){
   document.getElementById('setPress').value=g['Shoulder Press'].w;
   document.getElementById('setPressR').value=g['Shoulder Press'].r;
   document.getElementById('setDeadline').value=S.settings.deadline;
-  document.getElementById('setDays').value=S.settings.trainDays;
-  document.getElementById('setGoal').value=S.settings.trainGoal;
+  document.getElementById('setCardioDur').value=S.settings.cardioDuration;
+  populateCardioDayPicker();
   renderCustomGoalsEdit();
+}
+function populateCardioDayPicker(){
+  const days=S.settings.cardioDays||[];
+  document.querySelectorAll('#cardioDayPicker .dayBtn').forEach(b=>{
+    b.classList.toggle('active', days.includes(+b.dataset.day));
+  });
+}
+function toggleCardioDayBtn(btn){ btn.classList.toggle('active'); }
+function selectedCardioDays(){
+  return Array.from(document.querySelectorAll('#cardioDayPicker .dayBtn.active')).map(b=>+b.dataset.day);
 }
 // ----- custom goals -----
 function renderCustomGoalsEdit(){
@@ -1643,13 +1697,10 @@ function isDrasticChange(nv){
     const nvG=nv.goals[name]||{w:0,r:oldG[name].r};
     return Math.abs(nvG.w-oldG[name].w)>=10||nvG.r!==oldG[name].r;
   });
-  const goalTypeChanged=nv.trainGoal!==S.settings.trainGoal;
-  const daysJump=Math.abs(nv.trainDays-S.settings.trainDays)>=2;
-  return bigLiftChange||goalTypeChanged||daysJump;
+  return bigLiftChange;
 }
 function saveSettings(){
   const num=(id,fallback)=>{const v=+document.getElementById(id).value; return v>0?v:fallback;};
-  const goalEl=document.getElementById('setGoal');
   const nv={
     calTarget:num('setCal',DEFAULT_SETTINGS.calTarget),
     proTarget:num('setPro',DEFAULT_SETTINGS.proTarget),
@@ -1662,22 +1713,19 @@ function saveSettings(){
       'Shoulder Press':{w:num('setPress',DEFAULT_SETTINGS.goals['Shoulder Press'].w), r:num('setPressR',DEFAULT_SETTINGS.goals['Shoulder Press'].r)}
     },
     deadline:document.getElementById('setDeadline').value||DEFAULT_SETTINGS.deadline,
-    trainDays:num('setDays',DEFAULT_SETTINGS.trainDays),
-    trainGoal:goalEl.value||DEFAULT_SETTINGS.trainGoal
+    cardioDays:selectedCardioDays(),
+    cardioDuration:document.getElementById('setCardioDur').value.trim()||DEFAULT_SETTINGS.cardioDuration
   };
   const applySettings=()=>{
-    const daysChanged=S.settings.trainDays!==nv.trainDays;
-    const goalChanged=S.settings.trainGoal!==nv.trainGoal;
     S.settings.calTarget=nv.calTarget;
     S.settings.proTarget=nv.proTarget;
     S.settings.fatCap=nv.fatCap;
     S.settings.waterTarget=nv.waterTarget;
     S.settings.goals=nv.goals;
     S.settings.deadline=nv.deadline;
-    S.settings.trainDays=nv.trainDays;
-    S.settings.trainGoal=nv.trainGoal;
+    S.settings.cardioDays=nv.cardioDays;
+    S.settings.cardioDuration=nv.cardioDuration;
     save(); populateSettingsForm();
-    if(daysChanged||goalChanged) regenerateSplit();
     renderAll();
     toggleGoalsEdit(false);
     showToast('Goals saved.');
@@ -1688,24 +1736,36 @@ function saveSettings(){
     applySettings();
   }
 }
-const GOAL_LABELS={hypertrophy:'Build muscle', strength:'Build strength', general:'General fitness', fatloss:'Fat loss'};
+const DOW_ABBR=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function cardioDaysLabel(){
+  const days=(S.settings.cardioDays||[]).slice().sort((a,b)=>a-b);
+  if(!days.length) return 'None';
+  return days.map(d=>DOW_ABBR[d]).join(', ')+', '+S.settings.cardioDuration;
+}
 function renderGoalsView(){
   const g=S.settings.goals;
-  const rows=[
-    ['Calories', S.settings.calTarget+' cal'],
-    ['Protein', S.settings.proTarget+'g'],
-    ['Fat cap', S.settings.fatCap+'g'],
-    ['Water goal', S.settings.waterTarget+' oz'],
-    ['Days / week', S.settings.trainDays],
-    ['Training goal', GOAL_LABELS[S.settings.trainGoal]||S.settings.trainGoal],
-    ['Flat Bench goal', g['Flat Bench'].w+'lbs x '+g['Flat Bench'].r],
-    ['Back Squat goal', g['Back Squat'].w+'lbs x '+g['Back Squat'].r],
-    ['Deadlift goal', g['Deadlift'].w+'lbs x '+g['Deadlift'].r],
-    ['Shoulder Press goal', g['Shoulder Press'].w+'lbs x '+g['Shoulder Press'].r],
-    ['Goal date', fmtDate(S.settings.deadline)]
+  const groups=[
+    {title:'Nutrition', rows:[
+      ['Calories', S.settings.calTarget+' cal'],
+      ['Protein', S.settings.proTarget+'g'],
+      ['Fat cap', S.settings.fatCap+'g'],
+      ['Water goal', S.settings.waterTarget+' oz']
+    ]},
+    {title:'Cardio', rows:[
+      ['Cardio days', cardioDaysLabel()]
+    ]},
+    {title:'Lifting Goals', rows:[
+      ['Flat Bench', g['Flat Bench'].w+'lbs x '+g['Flat Bench'].r],
+      ['Back Squat', g['Back Squat'].w+'lbs x '+g['Back Squat'].r],
+      ['Deadlift', g['Deadlift'].w+'lbs x '+g['Deadlift'].r],
+      ['Shoulder Press', g['Shoulder Press'].w+'lbs x '+g['Shoulder Press'].r],
+      ['Goal date', fmtDate(S.settings.deadline)]
+    ]}
   ];
-  document.getElementById('goalsView').innerHTML=rows.map(([k,v])=>
-    '<div class="goalRow"><span class="hint">'+k+'</span><span>'+v+'</span></div>'
+  document.getElementById('goalsView').innerHTML=groups.map(grp=>
+    '<div class="settingsSection"><h3>'+grp.title+'</h3>'+
+    grp.rows.map(([k,v])=>'<div class="goalRow"><span class="hint">'+k+'</span><span>'+v+'</span></div>').join('')+
+    '</div>'
   ).join('');
 }
 function toggleGoalsEdit(edit){
@@ -1921,7 +1981,7 @@ document.addEventListener('touchend',e=>{
   if(i<0||i>=TABS.length) return;
   setTab(TABS[i]);
 },{passive:true});
-function renderAll(){header(); renderRules(); renderStreak(); renderWater(); renderFood(); renderMeals(); renderLifts(); renderGoals(); renderGoalsView(); renderBody(); renderChecklistTrend(); renderLiftTrend(); renderNutritionTrend(); backupNudge();}
+function renderAll(){header(); renderRules(); renderStreak(); renderWater(); renderFood(); renderMeals(); renderLifts(); renderGoals(); renderGoalsView(); renderBody(); backupNudge();}
 
 applyTheme();
 commitStaleDrafts();
